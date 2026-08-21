@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SEO } from "@/components/SEO";
 import ContactSection from "@/components/ContactSection";
+import Footer from "@/components/Footer";
 
 const Contact = () => {
   const { t } = useTranslation();
@@ -54,6 +55,8 @@ const Contact = () => {
 
       {/* Content */}
       <ContactSection />
+
+      <Footer />
     </div>
   );
 };

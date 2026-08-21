@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import lanceGauche from "@/assets/lance-gauche.png";
 import lanceDroite from "@/assets/lance-droite.png";
 import { SEO } from "@/components/SEO";
+import Footer from "@/components/Footer";
 
 interface Hero {
   id: string;
@@ -386,6 +387,8 @@ const HerosKwatt = () => {
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 };

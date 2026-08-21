@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { SEO } from "@/components/SEO";
+import Footer from "@/components/Footer";
 
 interface GalleryImage {
   id: string;
@@ -312,6 +313,8 @@ const Mediatheque = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <Footer />
     </div>
   );
 };

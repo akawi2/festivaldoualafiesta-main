@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SEO } from "@/components/SEO";
 import NewsSection from "@/components/NewsSection";
+import Footer from "@/components/Footer";
 
 const Programme = () => {
   const { t } = useTranslation();
@@ -35,6 +36,8 @@ const Programme = () => {
 
       {/* Content */}
       <NewsSection />
+
+      <Footer />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown, Globe } from "lucide-react";
@@ -21,6 +21,18 @@ const Navigation = () => {
   const [activeSection, setActiveSection] = useState("#accueil");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [reserveDropdownOpen, setReserveDropdownOpen] = useState(false);
+  const reserveRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!reserveDropdownOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (reserveRef.current && !reserveRef.current.contains(event.target as Node)) {
+        setReserveDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [reserveDropdownOpen]);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -163,12 +175,9 @@ const Navigation = () => {
 
           {/* CTA Button & Language Selector */}
           <div className="hidden md:flex items-center gap-2">
-            <div
-              className="relative"
-              onMouseEnter={() => setReserveDropdownOpen(true)}
-              onMouseLeave={() => setReserveDropdownOpen(false)}
-            >
+            <div className="relative" ref={reserveRef}>
               <Button
+                onClick={() => setReserveDropdownOpen((open) => !open)}
                 className="relative overflow-hidden text-white font-semibold hover:scale-105 transition-transform shadow-gold border border-gold/30"
                 style={{
                   backgroundImage: `url(${patternBg})`,
@@ -179,31 +188,35 @@ const Navigation = () => {
                 {t('nav.reserve')}
               </Button>
 
-              {/* Sous-menu ancré sous le bouton : les 2 options se séparent gauche/droite */}
-              <button
-                onClick={goToMissRegistration}
-                tabIndex={reserveDropdownOpen ? 0 : -1}
-                className={`absolute top-full mt-2 right-1/2 mr-1 whitespace-nowrap rounded-lg text-sm font-semibold border border-gold/30 bg-background text-foreground hover:text-gold hover:bg-accent shadow-lg transition-all duration-300 ease-out px-4 py-2.5 ${
-                  reserveDropdownOpen ? "opacity-100 -translate-x-4" : "opacity-0 translate-x-0 pointer-events-none"
+              {/* Panneau sous le bouton, avec pointe et fond, contenant les 2 options rapprochées.
+                  Ancré sur le bord droit du bouton (au lieu d'être centré) pour ne jamais déborder
+                  hors de l'écran quand "Réserver" est proche du bord droit du menu. */}
+              <div
+                className={`absolute top-full right-0 mt-3 z-50 transition-all duration-200 ease-out ${
+                  reserveDropdownOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
                 }`}
               >
-                {t('nav.registerAsMiss')}
-              </button>
+                {/* Pointe du panneau, alignée sur le centre du bouton */}
+                <div className="absolute -top-1.5 right-8 w-3 h-3 bg-background border-l border-t border-border rotate-45" />
 
-              <button
-                onClick={goToStandForm}
-                tabIndex={reserveDropdownOpen ? 0 : -1}
-                className={`absolute top-full mt-2 left-1/2 ml-1 whitespace-nowrap rounded-lg text-sm font-semibold border border-gold/30 bg-background text-foreground hover:text-gold hover:bg-accent shadow-lg transition-all duration-300 ease-out px-4 py-2.5 ${
-                  reserveDropdownOpen ? "opacity-100 translate-x-4" : "opacity-0 translate-x-0 pointer-events-none"
-                }`}
-              >
-                {t('nav.reserveStand')}
-              </button>
+                <div className="relative flex items-center gap-2 bg-background border border-border rounded-2xl shadow-lg p-2">
+                  <button
+                    onClick={goToMissRegistration}
+                    tabIndex={reserveDropdownOpen ? 0 : -1}
+                    className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors"
+                  >
+                    {t('nav.registerAsMiss')}
+                  </button>
 
-              {/* Zone invisible pour maintenir le survol entre le bouton et le sous-menu */}
-              {reserveDropdownOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-full h-2" />
-              )}
+                  <button
+                    onClick={goToStandForm}
+                    tabIndex={reserveDropdownOpen ? 0 : -1}
+                    className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors"
+                  >
+                    {t('nav.reserveStand')}
+                  </button>
+                </div>
+              </div>
             </div>
 
             <DropdownMenu>
@@ -305,19 +318,13 @@ const Navigation = () => {
                   </span>
                   <Button
                     onClick={goToMissRegistration}
-                    variant="outline"
-                    className="w-full font-semibold border-gold/30"
+                    className="w-full text-white font-semibold bg-gold hover:bg-gold-dark border border-gold/30"
                   >
                     {t('nav.registerAsMiss')}
                   </Button>
                   <Button
                     onClick={goToStandForm}
-                    className="w-full relative overflow-hidden text-white font-semibold border border-gold/30"
-                    style={{
-                      backgroundImage: `url(${patternBg})`,
-                      backgroundSize: '20px 20px',
-                      backgroundRepeat: 'repeat'
-                    }}
+                    className="w-full text-white font-semibold bg-gold hover:bg-gold-dark border border-gold/30"
                   >
                     {t('nav.reserveStand')}
                   </Button>
