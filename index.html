@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Festival Douala Fiesta - L'événement culturel incontournable de Douala</title>
+    <meta name="description" content="DOUALA Fiesta transforme vos rêves en événements inoubliables. Mariages, événements d'entreprise, anniversaires - 15 ans d'expertise en organisation d'événements.">
+    <meta name="author" content="DOUALA Fiesta" />
+    <meta name="keywords" content="événementiel, mariage, corporate, anniversaire, organisation événements, Paris">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://festivaldoualafiesta.cm/" />
+    <meta property="og:title" content="Festival Douala Fiesta - L'événement culturel incontournable de Douala">
+    <meta property="og:description" content="DOUALA Fiesta transforme vos rêves en événements inoubliables. Mariages, événements d'entreprise, anniversaires - 15 ans d'expertise en organisation d'événements.">
+    <meta property="og:image" content="https://festivaldoualafiesta.cm/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://festivaldoualafiesta.cm/" />
+    <meta name="twitter:title" content="Festival Douala Fiesta - L'événement culturel incontournable de Douala">
+    <meta name="twitter:description" content="DOUALA Fiesta transforme vos rêves en événements inoubliables. Mariages, événements d'entreprise, anniversaires - 15 ans d'expertise en organisation d'événements.">
+    <meta name="twitter:image" content="https://festivaldoualafiesta.cm/og-image.jpg" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/gpt-engineer-file-uploads/wDyOfZ62wSViIVzOdXRKvHfj31K2/uploads/1758636637230-logo_fdf.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://festivaldoualafiesta.cm/" />
+
+    <!-- HTML5 History API Fallback for SPA routing -->
+    <script type="text/javascript">
+      (function() {
+        // This script handles SPA routing fallback for servers that don't support rewrites
+        // It checks if we're on a deep link and the page hasn't loaded React yet
+        var defined_routes = ['/', '/miss-election', '/mediatheque', '/heros-kwatt', '/admin'];
+        var path = window.location.pathname;
+        
+        // Only run if we're on a defined route (not a 404 for static assets)
+        var isDefinedRoute = defined_routes.some(function(route) {
+          return path === route || path.startsWith(route + '/');
+        });
+        
+        // Store the intended path for React Router to pick up
+        if (isDefinedRoute && path !== '/') {
+          sessionStorage.setItem('spa_redirect_path', path + window.location.search + window.location.hash);
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

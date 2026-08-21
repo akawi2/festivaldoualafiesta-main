@@ -1,0 +1,421 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design system for elegant event planning company
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.75rem;
+
+    /* Custom event company colors - Elegant Brown Theme */
+    --navy: 25 40% 15%;
+    --navy-light: 30 35% 25%;
+    --navy-dark: 20 45% 10%;
+    --gold: 30 60% 45%;
+    --gold-light: 35 55% 65%;
+    --gold-dark: 25 65% 35%;
+    --cream: 40 30% 98%;
+    --white-soft: 40 20% 99%;
+    --gray-light: 40 15% 96%;
+    --gray-medium: 220 10% 50%;
+    --gray-dark: 220 15% 30%;
+
+    /* Admin specific colors - White & Orange theme */
+    --admin-bg: 0 0% 100%;
+    --admin-card: 0 0% 100%;
+    --admin-card-secondary: 30 100% 97%;
+    --admin-border: 30 90% 75%;
+    --admin-accent: 30 100% 50%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(25 40% 15%), hsl(30 60% 45%));
+    --gradient-gold: linear-gradient(135deg, hsl(30 60% 45%), hsl(35 55% 65%));
+    --gradient-subtle: linear-gradient(180deg, hsl(30 25% 95%), hsl(25 30% 90%));
+    --gradient-admin: linear-gradient(135deg, hsl(30 25% 95%), hsl(25 30% 92%));
+
+    /* Shadows */
+    --shadow-elegant: 0 4px 20px -2px hsl(25 40% 15% / 0.15);
+    --shadow-gold: 0 4px 15px -2px hsl(30 60% 45% / 0.25);
+    --shadow-soft: 0 2px 10px -2px hsl(25 35% 25% / 0.08);
+
+    /* Animations */
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Admin dark background variations */
+  .bg-gradient-dark {
+    background: var(--gradient-admin);
+  }
+
+  .bg-admin-card {
+    background: hsl(var(--admin-card));
+    border: 1px solid hsl(var(--admin-border));
+    box-shadow: var(--shadow-soft);
+  }
+
+  .bg-admin-card-secondary {
+    background: hsl(var(--admin-card-secondary));
+    border: 1px solid hsl(var(--admin-border));
+  }
+
+  .admin-glass {
+    background: hsl(var(--admin-card) / 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid hsl(var(--admin-border));
+  }
+
+  .admin-sidebar {
+    background: linear-gradient(180deg, hsl(var(--navy)), hsl(var(--navy-dark)));
+  }
+
+  .admin-header {
+    background: hsl(var(--admin-card) / 0.98);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid hsl(var(--admin-border));
+  }
+
+  /* Global overflow fix */
+  html,
+  body,
+  #root {
+    width: 100%;
+    overflow-x: clip;
+  }
+}
+
+@layer components {
+  /* Gradient backgrounds */
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-gradient-coral {
+    background: var(--gradient-gold);
+  }
+
+  .bg-gradient-gold {
+    background: var(--gradient-gold);
+  }
+
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+
+  /* Shadow utilities */
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .shadow-coral {
+    box-shadow: var(--shadow-gold);
+  }
+
+  /* Text colors */
+  .text-coral {
+    color: hsl(var(--accent));
+  }
+
+  .text-gray-light {
+    color: hsl(var(--gray-light));
+  }
+
+  /* Animation moderne pour le bouton flottant */
+  .floating-button {
+    position: relative;
+    background: hsl(0 0% 100% / 0.5);
+    animation:
+      heartbeat 16s ease-in-out infinite,
+      gradient-shift 8s ease-in-out infinite;
+    box-shadow:
+      0 8px 25px -8px hsl(var(--gray-light) / 0.5),
+      0 0 0 0 hsl(var(--gray-light) / 0.4);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .floating-button::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: hsl(0 0% 100% / 0.5);
+    animation: glow-pulse 12s ease-in-out infinite;
+    z-index: -1;
+    opacity: 0.7;
+    transition: opacity 5s ease;
+  }
+
+  .floating-button:hover {
+    background: hsl(var(--background) / 0.7);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 2px solid hsl(0 0% 100% / 0.6);
+    animation: heartbeat 2s ease-in-out infinite;
+    box-shadow:
+      0 0 30px hsl(var(--gold) / 0.35),
+      inset 0 0 12px hsl(var(--gold) / 0.08);
+  }
+
+  .floating-button:hover::before {
+    opacity: 0.3;
+  }
+
+  .sparkle-icon {
+    animation: sparkle 3s ease-in-out infinite;
+  }
+
+  /* Keyframes pour animations personnalisées (disponibles même sans utilitaires Tailwind) */
+  @keyframes heartbeat {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    14% {
+      transform: scale(1.12);
+    }
+    28% {
+      transform: scale(1);
+    }
+    42% {
+      transform: scale(1.12);
+    }
+    70% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+  }
+
+  @keyframes sparkle {
+    0%,
+    100% {
+      transform: rotate(0deg) scale(1);
+      opacity: 0.7;
+    }
+    25% {
+      transform: rotate(90deg) scale(1.2);
+      opacity: 1;
+    }
+    50% {
+      transform: rotate(180deg) scale(0.9);
+      opacity: 0.5;
+    }
+    75% {
+      transform: rotate(270deg) scale(1.1);
+      opacity: 0.9;
+    }
+  }
+
+  @keyframes gradient-shift {
+    0% {
+      background: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--gold-light)));
+    }
+    50% {
+      background: linear-gradient(135deg, hsl(var(--gold-light)), hsl(var(--gold)), hsl(var(--navy)));
+    }
+    100% {
+      background: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--gold-light)));
+    }
+  }
+
+  @keyframes lance-float-left {
+    0%,
+    100% {
+      transform: translateX(0px);
+    }
+    50% {
+      transform: translateX(-4px);
+    }
+  }
+
+  @keyframes lance-float-right {
+    0%,
+    100% {
+      transform: translateX(0px);
+    }
+    50% {
+      transform: translateX(4px);
+    }
+  }
+
+  /* Animation classes for lances */
+  .lance-gauche {
+    animation: lance-float-left 3s ease-in-out infinite;
+  }
+
+  .lance-droite {
+    animation: lance-float-right 3s ease-in-out infinite;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .lance-gauche {
+      animation: lance-float-left 4s ease-in-out infinite;
+    }
+
+    .lance-droite {
+      animation: lance-float-right 4s ease-in-out infinite;
+    }
+
+    @keyframes lance-float-left {
+      0%,
+      100% {
+        transform: translateX(0px);
+      }
+      50% {
+        transform: translateX(-2px);
+      }
+    }
+
+    @keyframes lance-float-right {
+      0%,
+      100% {
+        transform: translateX(0px);
+      }
+      50% {
+        transform: translateX(2px);
+      }
+    }
+  }
+
+  @keyframes title-float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  /* Animation class for titles */
+  .title-float {
+    animation: title-float 4s ease-in-out infinite;
+  }
+
+  /* Highlight form animation */
+  .highlight-form {
+    animation: highlight-glow 3s ease-in-out;
+    border: 2px solid hsl(var(--gold)) !important;
+    box-shadow:
+      0 0 20px hsl(var(--gold) / 0.3),
+      0 0 40px hsl(var(--gold) / 0.1),
+      var(--shadow-elegant) !important;
+  }
+
+  @keyframes highlight-glow {
+    0% {
+      border-color: hsl(var(--gold));
+      box-shadow:
+        0 0 20px hsl(var(--gold) / 0.3),
+        0 0 40px hsl(var(--gold) / 0.1);
+    }
+    50% {
+      border-color: hsl(var(--gold-light));
+      box-shadow:
+        0 0 30px hsl(var(--gold) / 0.5),
+        0 0 60px hsl(var(--gold) / 0.2);
+    }
+    100% {
+      border-color: hsl(var(--gold));
+      box-shadow:
+        0 0 20px hsl(var(--gold) / 0.3),
+        0 0 40px hsl(var(--gold) / 0.1);
+    }
+  }
+}
