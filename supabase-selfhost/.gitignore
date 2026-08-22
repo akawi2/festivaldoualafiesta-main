@@ -1,0 +1,8 @@
+# Real secrets — never commit
+.env
+.env.old
+
+# Runtime data (grows large, machine-specific)
+volumes/db/data
+volumes/storage
+volumes/logs/*.log
