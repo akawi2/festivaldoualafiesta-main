@@ -46,14 +46,33 @@ pg_dump "postgresql://postgres:<mdp-cloud>@<host-cloud>.supabase.co:5432/postgre
 psql "postgresql://postgres@127.0.0.1:5432/postgres" -f data.sql
 ```
 
-**c) Fichiers Storage** (5 buckets : `miss-registration-files`, `kwatt-heroes`, `miss-gallery`, `program-events`, `partner-logos`) — les fichiers eux-mêmes, jamais présents dans un dump SQL :
+**c) Fichiers Storage** (5 buckets : `miss-registration-files`, `kwatt-heroes`, `miss-gallery`, `program-events`, `partner-logos`) — les fichiers eux-mêmes, jamais présents dans un dump SQL.
+
+Utiliser [rclone](https://rclone.org/) avec le protocole S3 (que Storage expose des deux côtés) plutôt que la CLI Supabase : deux profils **nommés séparément avec leur URL explicite chacun**, donc aucune ambiguïté possible sur la source/destination — contrairement à `supabase storage cp ss:///...` dont la cible dépend implicitement du projet lié dans la CLI.
 
 ```bash
-supabase login
-supabase storage cp --recursive ss:///miss-gallery ./local-export/miss-gallery --experimental
-# répéter pour chaque bucket, puis réinjecter sur la nouvelle instance :
-supabase storage cp --recursive ./local-export/miss-gallery ss:///miss-gallery --experimental
+# Profil "cloud" (lecture seule) — clé S3 à générer dans le dashboard Supabase
+# actuel : Project Settings → Storage → S3 Connection
+rclone config create cloud-supabase s3 \
+  provider=Other \
+  endpoint=https://mpjnfyppuaurbffhtocw.supabase.co/storage/v1/s3 \
+  access_key_id=<access-key-du-dashboard> \
+  secret_access_key=<secret-key-du-dashboard>
+
+# Profil "self-hosted" (écriture) — clés depuis ce .env
+rclone config create selfhosted-supabase s3 \
+  provider=Other \
+  endpoint=https://supabase.festivaldoualafiesta.cm/storage/v1/s3 \
+  access_key_id=$(grep '^S3_PROTOCOL_ACCESS_KEY_ID=' .env | cut -d= -f2) \
+  secret_access_key=$(grep '^S3_PROTOCOL_ACCESS_KEY_SECRET=' .env | cut -d= -f2)
+
+# Sync bucket par bucket, cloud -> self-hosted uniquement (jamais l'inverse) :
+for bucket in miss-registration-files kwatt-heroes miss-gallery program-events partner-logos; do
+  rclone copy "cloud-supabase:$bucket" "selfhosted-supabase:$bucket" --progress
+done
 ```
+
+`rclone copy` ne supprime ni ne modifie rien côté source — chaque commande ci-dessus ne fait que lire `cloud-supabase:` et écrire sur `selfhosted-supabase:`.
 
 **Timing** : si le site reste en ligne pendant la migration, tout ce qui arrive après le dump (votes, inscriptions) sera manquant. Prévoir une courte fenêtre de maintenance, ou refaire un dump final juste avant de basculer l'app (étape 5).
 

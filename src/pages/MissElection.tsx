@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { getVoterIp, getVoterFingerprint } from "@/utils/voterIdentity";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -240,8 +241,7 @@ const MissElection = () => {
     setVotingInProgress(candidateId);
 
     try {
-      const fingerprint = await generateFingerprint();
-      const voterIp = "unknown"; // En production, obtenir l'IP réelle
+      const [fingerprint, voterIp] = await Promise.all([getVoterFingerprint(), getVoterIp()]);
 
       // Créer la session de vote
       const sessionId = `${fingerprint}-${Date.now()}`;
@@ -259,7 +259,7 @@ const MissElection = () => {
         console.error("Error recording vote:", voteError);
         toast({
           title: "Erreur",
-          description: t("miss.error"),
+          description: voteError.code === "P0001" ? voteError.message : t("miss.error"),
           variant: "destructive",
         });
         return;
@@ -290,16 +290,6 @@ const MissElection = () => {
     } finally {
       setVotingInProgress(null);
     }
-  };
-
-  const generateFingerprint = async (): Promise<string> => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    ctx?.fillText("fingerprint", 2, 2);
-    const canvasFingerprint = canvas.toDataURL();
-
-    const fingerprint = `${navigator.userAgent}-${screen.width}x${screen.height}-${canvasFingerprint}`;
-    return btoa(fingerprint).substring(0, 32);
   };
 
   const handleRegistration = async (e: React.FormEvent) => {

@@ -170,55 +170,55 @@ const Navigation = () => {
                   )}
                 </Link>
               ))}
-            </div>
-          </div>
 
-          {/* CTA Button & Language Selector */}
-          <div className="hidden md:flex items-center gap-2">
-            <div className="relative" ref={reserveRef}>
-              <Button
-                onClick={() => setReserveDropdownOpen((open) => !open)}
-                className="relative overflow-hidden text-white font-semibold hover:scale-105 transition-transform shadow-gold border border-gold/30"
-                style={{
-                  backgroundImage: `url(${patternBg})`,
-                  backgroundSize: '20px 20px',
-                  backgroundRepeat: 'repeat'
-                }}
-              >
-                {t('nav.reserve')}
-              </Button>
+              {/* Réserver, placé ici (près de Contacts, loin du sélecteur de langue) pour que
+                  le panneau puisse être centré sous le bouton sans déborder ni rien masquer. */}
+              <div className="relative" ref={reserveRef}>
+                <Button
+                  onClick={() => setReserveDropdownOpen((open) => !open)}
+                  className="relative overflow-hidden text-white font-semibold hover:scale-105 transition-transform shadow-gold border border-gold/30"
+                  style={{
+                    backgroundImage: `url(${patternBg})`,
+                    backgroundSize: '20px 20px',
+                    backgroundRepeat: 'repeat'
+                  }}
+                >
+                  {t('nav.reserve')}
+                </Button>
 
-              {/* Panneau sous le bouton, avec pointe et fond, contenant les 2 options rapprochées.
-                  Ancré sur le bord droit du bouton (au lieu d'être centré) pour ne jamais déborder
-                  hors de l'écran quand "Réserver" est proche du bord droit du menu. */}
-              <div
-                className={`absolute top-full right-0 mt-3 z-50 transition-all duration-200 ease-out ${
-                  reserveDropdownOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
-                }`}
-              >
-                {/* Pointe du panneau, alignée sur le centre du bouton */}
-                <div className="absolute -top-1.5 right-8 w-3 h-3 bg-background border-l border-t border-border rotate-45" />
+                {/* Panneau centré sous le bouton, avec pointe et fond, options rapprochées */}
+                <div
+                  className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 transition-all duration-200 ease-out ${
+                    reserveDropdownOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
+                  }`}
+                >
+                  {/* Pointe du panneau, alignée sur le centre du bouton */}
+                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-background border-l border-t border-border rotate-45" />
 
-                <div className="relative flex items-center gap-2 bg-background border border-border rounded-2xl shadow-lg p-2">
-                  <button
-                    onClick={goToMissRegistration}
-                    tabIndex={reserveDropdownOpen ? 0 : -1}
-                    className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors"
-                  >
-                    {t('nav.registerAsMiss')}
-                  </button>
+                  <div className="relative flex items-center gap-2 bg-background border border-border rounded-2xl shadow-lg p-2">
+                    <button
+                      onClick={goToMissRegistration}
+                      tabIndex={reserveDropdownOpen ? 0 : -1}
+                      className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors"
+                    >
+                      {t('nav.registerAsMiss')}
+                    </button>
 
-                  <button
-                    onClick={goToStandForm}
-                    tabIndex={reserveDropdownOpen ? 0 : -1}
-                    className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors"
-                  >
-                    {t('nav.reserveStand')}
-                  </button>
+                    <button
+                      onClick={goToStandForm}
+                      tabIndex={reserveDropdownOpen ? 0 : -1}
+                      className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors"
+                    >
+                      {t('nav.reserveStand')}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
+          {/* Language Selector */}
+          <div className="hidden md:flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
