@@ -275,6 +275,13 @@ services:
       db:
         # Disable this if you are using an external Postgres database
         condition: service_healthy
+      # PostgREST caches the schema at startup and never re-scans on its
+      # own. Without this, it can start against the base (pre-migration)
+      # schema and permanently 404 on every app table, even after
+      # migrations finishes right after it -- see docker-compose.yml
+      # migrations service.
+      migrations:
+        condition: service_completed_successfully
     healthcheck:
       test: [ "CMD", "postgrest", "--ready" ]
       interval: 5s
