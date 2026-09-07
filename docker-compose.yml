@@ -13,15 +13,25 @@ services:
     image: douala-fiesta:latest
     restart: unless-stopped
     networks:
-      - dokploy-network
-    # Pas de labels Traefik ici : sur Dokploy, le routage (domaine, port,
-    # certificat) se configure entièrement via l'onglet "Domains" de ce
-    # service dans l'UI — des labels manuels en plus créent un routeur en
-    # double du même nom et cassent le routage. Si ce compose est un jour
-    # déployé hors Dokploy (Traefik "nu"), il faudra réintroduire des labels
-    # traefik.* ici.
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      # Main router - HTTPS
+      - "traefik.http.routers.douala-fiesta.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
+      - "traefik.http.routers.douala-fiesta.entrypoints=websecure"
+      - "traefik.http.routers.douala-fiesta.tls=true"
+      - "traefik.http.routers.douala-fiesta.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.douala-fiesta.service=douala-fiesta-service"
+      # HTTP -> HTTPS redirect
+      - "traefik.http.routers.douala-fiesta-http.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
+      - "traefik.http.routers.douala-fiesta-http.entrypoints=web"
+      - "traefik.http.routers.douala-fiesta-http.middlewares=douala-fiesta-redirect"
+      - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.permanent=true"
+      # Which port Traefik should forward to
+      - "traefik.http.services.douala-fiesta-service.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
 
 networks:
-  dokploy-network:
+  proxy:
     external: true
-    name: dokploy-network

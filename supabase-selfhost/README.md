@@ -1,6 +1,6 @@
 # Supabase self-hosted — Douala Fiesta
 
-Stack officiel [`supabase/supabase`](https://github.com/supabase/supabase) (`docker/`), copié tel quel et adapté pour tourner derrière Traefik sur la même infra que le reste de cimania (réseau externe `dokploy-network`, créé automatiquement par Dokploy).
+Stack officiel [`supabase/supabase`](https://github.com/supabase/supabase) (`docker/`), copié tel quel et adapté pour tourner derrière Traefik sur la même infra que le reste de cimania (réseau externe `proxy`, comme dans `Saniya/docker-compose.yml`).
 
 - `docker-compose.yml` — le stack, avec les labels Traefik ajoutés sur `api-gw` (le service qui expose l'API REST/Auth/Storage/Realtime **et** Studio, tous derrière un seul point d'entrée sur le port 8000).
 - `docker-compose.upstream.yml` — copie intacte du fichier officiel, gardée pour diff lors des mises à jour futures.
@@ -11,7 +11,7 @@ Stack officiel [`supabase/supabase`](https://github.com/supabase/supabase) (`doc
 ## 1. Avant de démarrer
 
 1. Pointer un enregistrement DNS `A`/`AAAA` de `supabase.festivaldoualafiesta.cm` vers l'IP du serveur (ajuster le nom dans `.env` → `SUPABASE_PUBLIC_HOSTNAME` si besoin).
-2. Vérifier que le réseau Docker externe `dokploy-network` existe déjà sur le serveur (`docker network ls`) — Dokploy le crée normalement lui-même. Sinon : `docker network create dokploy-network`.
+2. Vérifier que le réseau Docker externe `proxy` existe déjà sur le serveur (`docker network ls`) — c'est celui utilisé par Traefik pour les autres apps cimania. Sinon : `docker network create proxy`.
 3. Relire `.env` — tout est pré-rempli et fonctionnel, mais pense à changer `DASHBOARD_USERNAME`/`DASHBOARD_PASSWORD` si tu veux un accès Studio personnalisé.
 
 ## 2. Démarrer le stack
