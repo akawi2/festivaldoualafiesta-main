@@ -79,10 +79,11 @@ services:
         aliases:
           - envoy
           - kong
-      # Reachable by Traefik on the shared external "proxy" network (see
-      # bottom of this file). Not published to the host directly — Traefik
-      # is the only public entrypoint, matching the rest of the cimania infra.
-      proxy: {}
+      # Reachable by Dokploy's Domains-tab routing on the shared external
+      # "dokploy-network" overlay network (see bottom of this file). Not
+      # published to the host directly — Traefik is the only public
+      # entrypoint.
+      dokploy-network: {}
     healthcheck:
       # Using a TCP port check because this image does not include curl or wget.
       test: ["CMD-SHELL", "timeout 1 bash -c '</dev/tcp/127.0.0.1/8000'"]
@@ -711,5 +712,5 @@ volumes:
   deno-cache:
 
 networks:
-  proxy:
+  dokploy-network:
     external: true

@@ -13,15 +13,17 @@ services:
     image: douala-fiesta:latest
     restart: unless-stopped
     networks:
-      - proxy
+      - dokploy-network
     # No Traefik labels here: this server's Traefik runs in Docker Swarm
     # mode and only discovers routes registered through Dokploy's own
     # "Domains" tab per service (Compose/port/domain) — it never reads
     # traefik.* labels on plain docker-compose containers. Configure the
-    # domain there (port 80). If this compose is ever deployed on a plain
-    # Traefik (non-Swarm, label-based discovery) host instead, labels will
-    # need to be reintroduced here.
+    # domain there (port 80). Attached to dokploy-network (Dokploy's own
+    # overlay network) since its Domains-tab routing needs the container
+    # reachable there. If this compose is ever deployed on a plain Traefik
+    # (non-Swarm, label-based discovery) host instead, labels will need to
+    # be reintroduced and the network changed back to an external "proxy".
 
 networks:
-  proxy:
+  dokploy-network:
     external: true
