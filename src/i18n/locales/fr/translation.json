@@ -8,7 +8,7 @@
     "contacts": "Contacts",
     "reserveStand": "Réserver mon stand",
     "reserve": "Réserver",
-    "registerAsMiss": "S'inscrire en tant que Miss",
+    "registerAsMiss": "Inscription Miss",
     "missContest": "Concours Miss Douala Fiesta 2026",
     "herosKwatt": "Les Héros du Kwat"
   },
@@ -47,7 +47,7 @@
     "point3": "Une plateforme où nos entreprises dialoguent directement avec des milliers de consommateurs",
     "point4": "Un moment unique où nos familles se rassemblent, partagent et construisent des souvenirs communs",
     "welcome": "Bienvenue sur le site officiel du Festival Douala Fiesta 2026, quatorze (14) jours de fête fructueuse, de culture et de partage au cœur de Douala.",
-    "dates": "Du 19 décembre 2026 au 1er janvier 2027, plongez dans un univers unique mêlant musique, danse, gastronomie et traditions locales.",
+    "dates": "Du 18 décembre 2026 au 1er janvier 2027, plongez dans un univers unique mêlant musique, danse, gastronomie et traditions locales.",
     "mission": "Notre mission",
     "missionText": "Promouvoir la culture camerounaise et africaine, renforcer le vivre-ensemble et offrir un espace de divertissement, d'échanges et de valorisation des talents locaux.",
     "approach": "Notre approche",
@@ -175,10 +175,15 @@
     "readLess": "Lire moins",
     "readMore": "Lire plus"
   },
+  "homeGallery": {
+    "title": "Un aperçu en",
+    "titleSpan": "images",
+    "viewAll": "Voir toute la galerie"
+  },
   "program": {
     "title": "Programme du",
     "festival": "Festival",
-    "description": "Découvrez le programme complet de DOUALA FIESTA 2026 sur 3 jours d'événements exceptionnels.",
+    "description": "Découvrez le programme complet de DOUALA FIESTA 2026 sur 14 jours d'événements exceptionnels.",
     "backToHome": "Retour à l'accueil",
     "day": "Jour",
     "noEvents": "Aucun événement prévu",

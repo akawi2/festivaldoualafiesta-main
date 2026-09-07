@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -55,29 +55,19 @@ const NewsSection = () => {
     loadEvents();
   }, []);
 
-  // Grouper les événements par date et les trier par ordre décroissant d'heure
-  const getEventsByDay = (dayNumber: number) => {
-    if (events.length === 0) return [];
+  // Toutes les dates uniques présentes dans les événements, triées par ordre croissant.
+  // Le nombre d'onglets "Jour X" s'adapte ainsi automatiquement au nombre réel de
+  // journées programmées, au lieu d'être limité à 3 jours en dur.
+  const uniqueDates = useMemo(
+    () => Array.from(new Set(events.map((event) => format(parseISO(event.start_time), "yyyy-MM-dd")))).sort(),
+    [events],
+  );
 
-    // Obtenir toutes les dates uniques des événements
-    const uniqueDates = Array.from(
-      new Set(events.map((event) => format(parseISO(event.start_time), "yyyy-MM-dd"))),
-    ).sort(); // Tri croissant des dates
-
-    // Sélectionner la date correspondant au jour demandé (indexé à partir de 1)
-    const targetDateStr = uniqueDates[dayNumber - 1];
-    if (!targetDateStr) return [];
-
-    // Filtrer les événements de cette date et les trier par heure décroissante
+  // Récupérer les événements d'une date donnée, triés par ordre décroissant d'heure
+  const getEventsByDate = (dateStr: string) => {
     return events
-      .filter((event) => {
-        const eventDateStr = format(parseISO(event.start_time), "yyyy-MM-dd");
-        return eventDateStr === targetDateStr;
-      })
-      .sort((a, b) => {
-        // Tri décroissant par heure de début
-        return new Date(b.start_time).getTime() - new Date(a.start_time).getTime();
-      });
+      .filter((event) => format(parseISO(event.start_time), "yyyy-MM-dd") === dateStr)
+      .sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
   };
 
   const renderProgrammeCard = (event: ProgramEvent) => (
@@ -149,18 +139,13 @@ const NewsSection = () => {
     </div>
   );
 
-  const renderDayEvents = (dayNumber: number) => {
-    const dayEvents = getEventsByDay(dayNumber);
-
-    // Obtenir la vraie date du premier événement de ce jour
-    let dayTitle = `Jour ${dayNumber}`;
-    let daySubtitle = "";
-
-    if (dayEvents.length > 0) {
-      const firstEventDate = parseISO(dayEvents[0].start_time);
-      dayTitle = format(firstEventDate, "EEEE dd MMMM yyyy", { locale });
-      daySubtitle = `${dayEvents.length} ${t("program.events")}${dayEvents.length > 1 ? "s" : ""} ${t("program.nbProgram")}`;
-    }
+  const renderDayEvents = (dateStr: string) => {
+    const dayEvents = getEventsByDate(dateStr);
+    const firstEventDate = dayEvents.length > 0 ? parseISO(dayEvents[0].start_time) : null;
+    const dayTitle = firstEventDate ? format(firstEventDate, "EEEE dd MMMM yyyy", { locale }) : "";
+    const daySubtitle = firstEventDate
+      ? `${dayEvents.length} ${t("program.events")}${dayEvents.length > 1 ? "s" : ""} ${t("program.nbProgram")}`
+      : "";
 
     return (
       <div className="space-y-8">
@@ -168,21 +153,7 @@ const NewsSection = () => {
           <h3 className="text-2xl font-bold text-foreground mb-2 capitalize">{dayTitle}</h3>
           <p className="text-muted-foreground">{daySubtitle}</p>
         </div>
-        {isLoading ? (
-          renderLoadingSkeleton()
-        ) : dayEvents.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {dayEvents.map((event) => renderProgrammeCard(event))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="bg-muted rounded-full p-6 w-fit mx-auto mb-4">
-              <Calendar className="h-12 w-12 text-muted-foreground" />
-            </div>
-            <h4 className="text-lg font-medium text-foreground mb-2">{t("program.noEvents")}</h4>
-            <p className="text-muted-foreground">{t("program.comingSoon")}</p>
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">{dayEvents.map((event) => renderProgrammeCard(event))}</div>
       </div>
     );
   };
@@ -190,26 +161,33 @@ const NewsSection = () => {
   return (
     <section id="programme" className="py-12 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {isLoading ? (
+          renderLoadingSkeleton()
+        ) : uniqueDates.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="bg-muted rounded-full p-6 w-fit mx-auto mb-4">
+              <Calendar className="h-12 w-12 text-muted-foreground" />
+            </div>
+            <h4 className="text-lg font-medium text-foreground mb-2">{t("program.noEvents")}</h4>
+            <p className="text-muted-foreground">{t("program.comingSoon")}</p>
+          </div>
+        ) : (
+          <Tabs defaultValue={uniqueDates[0]} className="w-full">
+            <TabsList className="flex flex-wrap h-auto justify-center gap-2 mb-12 bg-transparent">
+              {uniqueDates.map((dateStr, index) => (
+                <TabsTrigger key={dateStr} value={dateStr} className="text-sm">
+                  {t("program.day")} {index + 1}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-        <Tabs defaultValue="jour1" className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-12">
-            <TabsTrigger value="jour1" className="text-sm">
-              {t("program.day")} 1
-            </TabsTrigger>
-            <TabsTrigger value="jour2" className="text-sm">
-              {t("program.day")} 2
-            </TabsTrigger>
-            <TabsTrigger value="jour3" className="text-sm">
-              {t("program.day")} 3
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="jour1">{renderDayEvents(1)}</TabsContent>
-
-          <TabsContent value="jour2">{renderDayEvents(2)}</TabsContent>
-
-          <TabsContent value="jour3">{renderDayEvents(3)}</TabsContent>
-        </Tabs>
+            {uniqueDates.map((dateStr) => (
+              <TabsContent key={dateStr} value={dateStr}>
+                {renderDayEvents(dateStr)}
+              </TabsContent>
+            ))}
+          </Tabs>
+        )}
       </div>
     </section>
   );

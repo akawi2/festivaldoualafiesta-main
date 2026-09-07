@@ -1,7 +1,7 @@
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
-import PartnersSection from "@/components/PartnersSection";
+import HomeGallerySection from "@/components/HomeGallerySection";
 import Footer from "@/components/Footer";
 import FloatingRegisterButton from "@/components/FloatingRegisterButton";
 import { SEO } from "@/components/SEO";
@@ -19,7 +19,7 @@ const Index = () => {
       <Navigation />
       <HeroSection />
       <AboutSection />
-      <PartnersSection />
+      <HomeGallerySection />
       <Footer />
       <FloatingRegisterButton />
     </div>

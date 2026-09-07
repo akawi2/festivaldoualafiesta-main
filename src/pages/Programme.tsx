@@ -14,7 +14,7 @@ const Programme = () => {
     <div className="min-h-screen bg-background">
       <SEO
         title="Programme - Festival Douala Fiesta"
-        description="Découvrez le programme complet du Festival Douala Fiesta 2026 sur 3 jours d'événements exceptionnels : concerts, spectacles et animations."
+        description="Découvrez le programme complet du Festival Douala Fiesta 2026 sur 14 jours d'événements exceptionnels : concerts, spectacles et animations."
         keywords="programme festival, événements Douala Fiesta, concerts, spectacles, Cameroun"
         canonicalUrl="https://festivaldoualafiesta.cm/programme"
         ogImage="https://festivaldoualafiesta.cm/og-image.jpg"

@@ -78,10 +78,11 @@ services:
         aliases:
           - envoy
           - kong
-      # Reachable by Traefik on the shared external "proxy" network (see
-      # bottom of this file). Not published to the host directly — Traefik
-      # is the only public entrypoint, matching the rest of the cimania infra.
-      proxy: {}
+      # Reachable by Traefik on the shared external "dokploy-network" network
+      # (see bottom of this file). Not published to the host directly —
+      # Traefik is the only public entrypoint, matching the rest of the
+      # cimania infra deployed via Dokploy.
+      dokploy-network: {}
     healthcheck:
       # Using a TCP port check because this image does not include curl or wget.
       test: ["CMD-SHELL", "timeout 1 bash -c '</dev/tcp/127.0.0.1/8000'"]
@@ -91,10 +92,12 @@ services:
     depends_on:
       studio:
         condition: service_healthy
-    # Uncomment to also reach the gateway directly on the host (e.g. for local
-    # testing without Traefik). Left off by default so Traefik/TLS is the only path in.
-    # ports:
-    #   - "127.0.0.1:${API_GW_HTTP_PORT:-8000}:8000/tcp"
+    # Bound to localhost only — safe to leave on: lets you reach the gateway
+    # directly for local testing/admin, without opening it to the internet.
+    # Traefik (via the "dokploy-network" network + labels below) remains the
+    # public path in.
+    ports:
+      - "127.0.0.1:${API_GW_HTTP_PORT:-8000}:8000/tcp"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.supabase.rule=Host(`${SUPABASE_PUBLIC_HOSTNAME}`)"
@@ -601,11 +604,136 @@ services:
         "/app/bin/migrate && /app/bin/supavisor eval \"$$(cat /etc/pooler/pooler.exs)\" && /app/bin/server"
       ]
 
+  # One-shot: applies every file in ../supabase/migrations (the app's own
+  # schema history, not Supabase's built-in init scripts above) in filename
+  # order, then exits. Tracks applied files in public._migrations_applied so
+  # each file runs exactly ONCE ever, no matter how many times the stack is
+  # restarted/redeployed — without this, a few older migrations in this
+  # history do a plain INSERT with no guard (demo seed data) and would
+  # duplicate rows every time `docker compose up` re-runs this service.
+  migrations:
+    image: postgres:17-alpine
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../supabase/migrations:/migrations:ro
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -u
+        psql -h "$$POSTGRES_HOST" -p "$$POSTGRES_PORT" -U postgres -d "$$POSTGRES_DB" -v ON_ERROR_STOP=1 -c "
+          CREATE TABLE IF NOT EXISTS public._migrations_applied (
+            filename text PRIMARY KEY,
+            applied_at timestamptz NOT NULL DEFAULT now()
+          );
+        "
+
+        fail=0
+        for f in /migrations/*.sql; do
+          fname=$$(basename "$$f")
+          already=$$(psql -h "$$POSTGRES_HOST" -p "$$POSTGRES_PORT" -U postgres -d "$$POSTGRES_DB" -tAc \
+            "SELECT 1 FROM public._migrations_applied WHERE filename = '$$fname'")
+          if [ "$$already" = "1" ]; then
+            echo "==> Skipping $$fname (already applied)"
+            continue
+          fi
+
+          echo "==> Applying $$fname"
+          if ! psql -h "$$POSTGRES_HOST" -p "$$POSTGRES_PORT" -U postgres -d "$$POSTGRES_DB" -v ON_ERROR_STOP=1 -f "$$f"; then
+            echo "!!  $$fname had an error (often a harmless 'already exists' from older migrations)"
+            fail=$$((fail+1))
+          fi
+
+          # Marked as applied even on error: known failures in this history are
+          # single-statement "already exists" issues inside an otherwise-fine
+          # file — retrying them forever would just repeat the same error.
+          psql -h "$$POSTGRES_HOST" -p "$$POSTGRES_PORT" -U postgres -d "$$POSTGRES_DB" -v ON_ERROR_STOP=1 -c \
+            "INSERT INTO public._migrations_applied (filename) VALUES ('$$fname') ON CONFLICT DO NOTHING;"
+        done
+        echo "Migrations done: $$fail file(s) reported an error on first application, see log above."
+        exit 0
+
+  # One-shot: pulls a data-only snapshot of the public schema from the cloud
+  # Supabase project (CLOUD_DATABASE_URL) into this instance, for test
+  # deployments that want real-looking data instead of an empty schema.
+  # Skipped automatically (schema-only) if CLOUD_DATABASE_URL is unset, and
+  # skipped on every later restart once data is already present — this is a
+  # one-time seed, not a sync, so it never overwrites local test changes.
+  data-seed:
+    image: postgres:17-alpine
+    restart: "no"
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      CLOUD_DATABASE_URL: ${CLOUD_DATABASE_URL:-}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -u
+        already=$$(psql -h "$$POSTGRES_HOST" -p "$$POSTGRES_PORT" -U postgres -d "$$POSTGRES_DB" -tAc \
+          "SELECT EXISTS (SELECT 1 FROM public._data_seeded)" 2>/dev/null)
+        if [ "$$already" = "t" ]; then
+          echo "==> Test data already imported, skipping (drop table public._data_seeded to force a re-import)."
+          exit 0
+        fi
+
+        if [ -z "$$CLOUD_DATABASE_URL" ]; then
+          echo "==> CLOUD_DATABASE_URL is not set — leaving the schema empty (no test data to import)."
+          exit 0
+        fi
+
+        echo "==> Dumping public schema data from the cloud project..."
+        pg_dump "$$CLOUD_DATABASE_URL" --schema=public --data-only --no-owner -f /tmp/data.sql
+
+        echo "==> Importing into this instance..."
+        psql -h "$$POSTGRES_HOST" -p "$$POSTGRES_PORT" -U postgres -d "$$POSTGRES_DB" -v ON_ERROR_STOP=1 -f /tmp/data.sql
+
+        psql -h "$$POSTGRES_HOST" -p "$$POSTGRES_PORT" -U postgres -d "$$POSTGRES_DB" -v ON_ERROR_STOP=1 -c "
+          CREATE TABLE IF NOT EXISTS public._data_seeded (seeded_at timestamptz NOT NULL DEFAULT now());
+          INSERT INTO public._data_seeded DEFAULT VALUES;
+        "
+        echo "Test data import done."
+
+  # One-shot: for every row imported by data-seed that still points at a
+  # cloud storage URL (candidate photos, gallery images, ID cards, partner
+  # logos, program event images...), downloads the file from the cloud
+  # project's PUBLIC url (no cloud credentials needed — every bucket here is
+  # public) and re-uploads it into this instance's own Storage, then rewrites
+  # the row to point at the local URL. Idempotent: rows already pointing at
+  # SUPABASE_PUBLIC_URL are left untouched, so re-running is a no-op.
+  storage-seed:
+    image: node:20-alpine
+    restart: "no"
+    depends_on:
+      data-seed:
+        condition: service_completed_successfully
+      api-gw:
+        condition: service_healthy
+    volumes:
+      - ./seed-storage.mjs:/seed-storage.mjs:ro
+    environment:
+      INTERNAL_API_URL: http://envoy:8000
+      SUPABASE_PUBLIC_URL: ${SUPABASE_PUBLIC_URL}
+      SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
+    entrypoint: ["node", "/seed-storage.mjs"]
+
 volumes:
   db-config:
   deno-cache:
 
 networks:
-  proxy:
+  dokploy-network:
     external: true
-    name: proxy
+    name: dokploy-network

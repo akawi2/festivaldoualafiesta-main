@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { getVoterIp, getVoterFingerprint } from "@/utils/voterIdentity";
+import { getVisitorIp, getVisitorFingerprint } from "@/utils/visitorIdentity";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -241,7 +241,7 @@ const MissElection = () => {
     setVotingInProgress(candidateId);
 
     try {
-      const [fingerprint, voterIp] = await Promise.all([getVoterFingerprint(), getVoterIp()]);
+      const [fingerprint, voterIp] = await Promise.all([getVisitorFingerprint(), getVisitorIp()]);
 
       // Créer la session de vote
       const sessionId = `${fingerprint}-${Date.now()}`;

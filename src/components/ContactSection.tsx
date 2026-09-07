@@ -2,15 +2,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Phone, Mail, Clock, Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { MapPin, Phone, Mail, Clock, Plus, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { getVisitorIp, getVisitorFingerprint } from "@/utils/visitorIdentity";
+import { buildWhatsAppUrl } from "@/utils/whatsapp";
 
 const ContactSection = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     scene: "",
@@ -178,6 +182,8 @@ const ContactSection = () => {
     }
 
     try {
+      const [submitterIp, submitterFingerprint] = await Promise.all([getVisitorIp(), getVisitorFingerprint()]);
+
       const { data, error } = await supabase.rpc("submit_stand_reservation", {
         p_stand_type: standData.standType,
         p_stand_name: standData.standName,
@@ -185,13 +191,15 @@ const ContactSection = () => {
         p_quantity: standData.quantity,
         p_price_fcfa: priceStand,
         p_total_price: totalPrice,
+        p_ip: submitterIp,
+        p_fingerprint: submitterFingerprint,
       });
 
       if (error) {
         console.error("Error submitting stand reservation:", error);
         toast({
           title: "Erreur",
-          description: "Une erreur est survenue lors de la réservation. Veuillez réessayer.",
+          description: error.code === "P0001" ? error.message : "Une erreur est survenue lors de la réservation. Veuillez réessayer.",
           variant: "destructive",
         });
         return;
@@ -202,6 +210,17 @@ const ContactSection = () => {
         title: "Réservation envoyée !",
         description: `Votre demande de réservation pour ${standData.quantity} stand(s) ${standData.standType} (Total: ${totalPrice.toLocaleString("fr-FR")} FCFA) a été envoyée. Nous vous recontacterons rapidement.`,
       });
+
+      setWhatsappUrl(
+        buildWhatsAppUrl(
+          `Bonjour, je viens de réserver un stand pour le Festival Douala Fiesta.\n` +
+            `Type de stand : ${standData.standType}\n` +
+            `Nom/Entreprise : ${standData.standName}\n` +
+            `Téléphone : ${standData.standPhone}\n` +
+            `Quantité : ${standData.quantity}\n` +
+            `Montant total : ${totalPrice.toLocaleString("fr-FR")} FCFA`,
+        ),
+      );
 
       setStandData({
         standType: "",
@@ -302,6 +321,7 @@ const ContactSection = () => {
   };
 
   return (
+    <>
     <section id="contact" className="py-12 bg-background scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -592,6 +612,28 @@ const ContactSection = () => {
         </div>
       </div>
     </section>
+
+    <Dialog open={!!whatsappUrl} onOpenChange={(open) => !open && setWhatsappUrl(null)}>
+      <DialogContent className="max-w-sm text-center">
+        <DialogHeader>
+          <DialogTitle className="text-center">Réservation envoyée !</DialogTitle>
+          <DialogDescription className="text-center">
+            Vous pouvez continuer la conversation sur WhatsApp pour la suite de votre réservation.
+          </DialogDescription>
+        </DialogHeader>
+        <Button
+          className="w-full bg-[#25D366] hover:bg-[#1ebe57] text-white"
+          onClick={() => {
+            if (whatsappUrl) window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+            setWhatsappUrl(null);
+          }}
+        >
+          <MessageCircle className="h-4 w-4 mr-2" />
+          Continuer sur WhatsApp
+        </Button>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
 

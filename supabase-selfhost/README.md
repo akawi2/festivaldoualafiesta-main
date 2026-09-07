@@ -1,6 +1,6 @@
 # Supabase self-hosted — Douala Fiesta
 
-Stack officiel [`supabase/supabase`](https://github.com/supabase/supabase) (`docker/`), copié tel quel et adapté pour tourner derrière Traefik sur la même infra que le reste de cimania (réseau externe `proxy`, comme dans `Saniya/docker-compose.yml`).
+Stack officiel [`supabase/supabase`](https://github.com/supabase/supabase) (`docker/`), copié tel quel et adapté pour tourner derrière Traefik sur la même infra que le reste de cimania (réseau externe `dokploy-network`, créé automatiquement par Dokploy).
 
 - `docker-compose.yml` — le stack, avec les labels Traefik ajoutés sur `api-gw` (le service qui expose l'API REST/Auth/Storage/Realtime **et** Studio, tous derrière un seul point d'entrée sur le port 8000).
 - `docker-compose.upstream.yml` — copie intacte du fichier officiel, gardée pour diff lors des mises à jour futures.
@@ -11,7 +11,7 @@ Stack officiel [`supabase/supabase`](https://github.com/supabase/supabase) (`doc
 ## 1. Avant de démarrer
 
 1. Pointer un enregistrement DNS `A`/`AAAA` de `supabase.festivaldoualafiesta.cm` vers l'IP du serveur (ajuster le nom dans `.env` → `SUPABASE_PUBLIC_HOSTNAME` si besoin).
-2. Vérifier que le réseau Docker externe `proxy` existe déjà sur le serveur (`docker network ls`) — c'est celui utilisé par Traefik pour Saniya. Sinon : `docker network create proxy`.
+2. Vérifier que le réseau Docker externe `dokploy-network` existe déjà sur le serveur (`docker network ls`) — Dokploy le crée normalement lui-même. Sinon : `docker network create dokploy-network`.
 3. Relire `.env` — tout est pré-rempli et fonctionnel, mais pense à changer `DASHBOARD_USERNAME`/`DASHBOARD_PASSWORD` si tu veux un accès Studio personnalisé.
 
 ## 2. Démarrer le stack
@@ -23,58 +23,61 @@ docker compose ps
 
 Studio (dashboard) et l'API sont sur `https://supabase.festivaldoualafiesta.cm` (Studio protégé par l'auth basique `DASHBOARD_USERNAME`/`DASHBOARD_PASSWORD`).
 
-## 3. Migrer les données depuis le projet Supabase cloud actuel
-
-⚠️ Un simple `pg_dump` global **ne suffit pas** : il rate les buckets Storage (schéma `storage`, géré par Supabase, pas `public`) et ne contient jamais les fichiers binaires. Il faut faire les 3 étapes ci-dessous, dans l'ordre, sans en sauter aucune.
-
-**a) Schéma — rejouer les migrations du projet** plutôt qu'un dump brut, pour recréer tables, policies RLS, fonctions RPC **et** les buckets Storage (leurs `INSERT INTO storage.buckets` sont dedans) exactement comme construits à l'origine :
+**Le schéma applicatif (les 50+ fichiers de `../supabase/migrations/`) se rejoue automatiquement** via le service `migrations` du compose — pas besoin de le faire à la main. Il tourne une fois, applique tout dans l'ordre, marque chaque fichier dans une table `_migrations_applied` pour ne jamais le rejouer deux fois (même après un redémarrage du stack), puis s'arrête. Pour suivre sa progression ou le relancer manuellement :
 
 ```bash
-export PGPASSWORD=$(grep '^POSTGRES_PASSWORD=' .env | cut -d= -f2)
-for f in ../supabase/migrations/*.sql; do
-  echo "→ $f"
-  psql "postgresql://postgres@127.0.0.1:5432/postgres" -f "$f" || break
-done
+docker compose logs migrations
+# ou pour le relancer explicitement (idempotent, sans risque) :
+docker compose run --rm migrations
 ```
 
-**b) Données — dump *uniquement les données*** du schéma `public` sur le projet cloud actuel (le schéma vient d'être recréé à l'étape a, pas besoin de le redupliquer) :
+## 3. Importer les données de test depuis le projet Supabase cloud (automatique)
+
+Deux services one-shot enchaînent automatiquement après `migrations`, **si `CLOUD_DATABASE_URL` est renseigné dans `.env`** :
+
+- `data-seed` — dump *data-only* du schéma `public` sur le projet cloud (`pg_dump`) puis import local (`psql`). S'exécute une seule fois : au prochain `docker compose up`, il se voit déjà fait (table `public._data_seeded`) et ne repasse pas.
+- `storage-seed` — pour chaque ligne importée qui pointe encore vers une URL Storage du projet cloud (photos de candidates, galerie, CNI, logos partenaires, images de programme...), télécharge le fichier en HTTPS simple (tous les buckets sont publics, **aucune clé S3 requise**) et le ré-uploade dans le Storage de cette instance, puis réécrit l'URL en base. Lui aussi idempotent : une ligne déjà réécrite vers `SUPABASE_PUBLIC_URL` est ignorée au prochain passage.
+
+**Pour l'activer**, renseigner dans `.env` (jamais commité) :
 
 ```bash
+CLOUD_DATABASE_URL=postgresql://postgres:<mdp-cloud>@<host-cloud>.supabase.co:5432/postgres
+```
+
+puis `docker compose up -d` (ou juste relancer les deux services : `docker compose run --rm data-seed && docker compose run --rm storage-seed`). Sans cette variable, le stack démarre avec un schéma vide (comportement par défaut, aucune erreur).
+
+⚠️ `CLOUD_DATABASE_URL` contient le mot de passe de production — ne le laisser que dans le `.env` du serveur qui en a réellement besoin, jamais dans ce dépôt. Une fois l'import confirmé (étape 4), tu peux le retirer du `.env` : il ne sert qu'au premier démarrage.
+
+**Timing** : si le site reste en ligne pendant l'import, tout ce qui arrive après le dump (votes, inscriptions) sera manquant. Pour un environnement de test ce n'est généralement pas gênant ; pour une vraie bascule de prod, prévoir une courte fenêtre de maintenance ou relancer `data-seed` juste avant de basculer l'app (après avoir vidé `public._data_seeded`).
+
+<details>
+<summary>Import manuel (dépannage / cas particulier)</summary>
+
+```bash
+# a) Données
 pg_dump "postgresql://postgres:<mdp-cloud>@<host-cloud>.supabase.co:5432/postgres" \
   --schema=public --data-only --no-owner -f data.sql
+psql "postgresql://postgres@127.0.0.1:$(grep '^POSTGRES_PORT=' .env | cut -d= -f2)/postgres" -f data.sql
 
-psql "postgresql://postgres@127.0.0.1:5432/postgres" -f data.sql
-```
-
-**c) Fichiers Storage** (5 buckets : `miss-registration-files`, `kwatt-heroes`, `miss-gallery`, `program-events`, `partner-logos`) — les fichiers eux-mêmes, jamais présents dans un dump SQL.
-
-Utiliser [rclone](https://rclone.org/) avec le protocole S3 (que Storage expose des deux côtés) plutôt que la CLI Supabase : deux profils **nommés séparément avec leur URL explicite chacun**, donc aucune ambiguïté possible sur la source/destination — contrairement à `supabase storage cp ss:///...` dont la cible dépend implicitement du projet lié dans la CLI.
-
-```bash
-# Profil "cloud" (lecture seule) — clé S3 à générer dans le dashboard Supabase
-# actuel : Project Settings → Storage → S3 Connection
+# b) Fichiers Storage (si storage-seed ne suffit pas, ex. accès direct hors du réseau compose)
 rclone config create cloud-supabase s3 \
   provider=Other \
   endpoint=https://mpjnfyppuaurbffhtocw.supabase.co/storage/v1/s3 \
   access_key_id=<access-key-du-dashboard> \
   secret_access_key=<secret-key-du-dashboard>
 
-# Profil "self-hosted" (écriture) — clés depuis ce .env
 rclone config create selfhosted-supabase s3 \
   provider=Other \
   endpoint=https://supabase.festivaldoualafiesta.cm/storage/v1/s3 \
   access_key_id=$(grep '^S3_PROTOCOL_ACCESS_KEY_ID=' .env | cut -d= -f2) \
   secret_access_key=$(grep '^S3_PROTOCOL_ACCESS_KEY_SECRET=' .env | cut -d= -f2)
 
-# Sync bucket par bucket, cloud -> self-hosted uniquement (jamais l'inverse) :
 for bucket in miss-registration-files kwatt-heroes miss-gallery program-events partner-logos; do
   rclone copy "cloud-supabase:$bucket" "selfhosted-supabase:$bucket" --progress
 done
 ```
 
-`rclone copy` ne supprime ni ne modifie rien côté source — chaque commande ci-dessus ne fait que lire `cloud-supabase:` et écrire sur `selfhosted-supabase:`.
-
-**Timing** : si le site reste en ligne pendant la migration, tout ce qui arrive après le dump (votes, inscriptions) sera manquant. Prévoir une courte fenêtre de maintenance, ou refaire un dump final juste avant de basculer l'app (étape 5).
+</details>
 
 ## 4. Vérifier que rien n'a été perdu
 
@@ -89,16 +92,21 @@ select count(*) from admin_users;
 
 Puis manuellement : ouvrir une photo de candidate depuis la nouvelle URL Storage, se connecter à `/admin` avec un compte existant, voter une fois pour confirmer que `increment_candidate_votes` fonctionne.
 
-## 5. Pointer l'app vers la nouvelle instance
+## 5. Déployer l'app avec cette instance comme backend
 
-Dans `../src/integrations/supabase/client.ts`, remplacer :
+`client.ts` lit désormais `VITE_SUPABASE_URL`/`VITE_SUPABASE_PUBLISHABLE_KEY` au build (voir `../.env.example`) — plus besoin d'éditer de fichier source. Dans le dossier parent (`festivaldoualafiesta-main/`) :
 
-```ts
-const SUPABASE_URL = "https://mpjnfyppuaurbffhtocw.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJ...";
+```bash
+cp .env.example .env
+# éditer .env :
+#   VITE_SUPABASE_URL=https://supabase.festivaldoualafiesta.cm   (SUPABASE_PUBLIC_URL de ce .env)
+#   VITE_SUPABASE_PUBLISHABLE_KEY=<ANON_KEY de ce .env>
+
+docker compose build
+docker compose up -d
 ```
 
-par l'URL et la clé `ANON_KEY` de ce `.env` (`SUPABASE_PUBLIC_URL` et `ANON_KEY`), puis reconstruire l'image de l'app (`docker compose build` dans le dossier parent).
+Sans ce `.env`, le build retombe automatiquement sur le Supabase cloud de production (valeur par défaut codée dans `client.ts`) — donc aucun risque de casser autre chose en oubliant cette étape.
 
 ## ⚠️ À corriger avant la mise en production
 

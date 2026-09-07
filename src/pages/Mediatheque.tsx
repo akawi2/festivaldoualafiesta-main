@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Play, Pause, Camera, X } from "lucide-react";
+import { ArrowLeft, Play, Pause, Camera, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -24,12 +24,10 @@ interface GalleryImage {
 const Mediatheque = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>(t("mediatheque.all"));
-  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const [isAutoplay, setIsAutoplay] = useState(true);
   const autoplay = React.useRef(
     Autoplay({
@@ -74,24 +72,20 @@ const Mediatheque = () => {
     }
   };
 
-  const openImageDialog = (imageId: string) => {
-    setSelectedImage(imageId);
-    setIsDialogOpen(true);
-  };
-
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedImage(null);
-  };
-
-  const selectedImageData = selectedImage ? galleryImages.find((img) => img.id === selectedImage) : null;
-
   const categories = [t("mediatheque.all"), ...Array.from(new Set(galleryImages.map((img) => img.category)))];
 
   const filteredImages =
     selectedCategory === t("mediatheque.all")
       ? galleryImages
       : galleryImages.filter((img) => img.category === selectedCategory);
+
+  const openViewer = (index: number) => setViewerIndex(index);
+  const closeViewer = () => setViewerIndex(null);
+  const showPrev = () =>
+    setViewerIndex((i) => (i === null ? null : (i - 1 + filteredImages.length) % filteredImages.length));
+  const showNext = () => setViewerIndex((i) => (i === null ? null : (i + 1) % filteredImages.length));
+
+  const viewerImage = viewerIndex !== null ? filteredImages[viewerIndex] : null;
 
   if (loading) {
     return (
@@ -180,11 +174,11 @@ const Mediatheque = () => {
               }}
             >
               <CarouselContent className="-ml-4">
-                {filteredImages.map((image) => (
+                {filteredImages.map((image, index) => (
                   <CarouselItem key={image.id} className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                     <Card
-                      className="group overflow-hidden shadow-elegant hover:shadow-coral transition-all duration-500 hover:-translate-y-2 cursor-pointer h-full"
-                      onClick={() => openImageDialog(image.id)}
+                      className="group overflow-hidden shadow-elegant hover:shadow-coral transition-all duration-500 hover:-translate-y-2 cursor-pointer"
+                      onClick={() => openViewer(index)}
                     >
                       <div className="relative aspect-square overflow-hidden bg-muted">
                         {image.category === "Vidéo" ? (
@@ -216,52 +210,7 @@ const Mediatheque = () => {
                             </div>
                           </>
                         )}
-                        <div className="absolute top-3 left-3 bg-gradient-coral text-white px-2 py-1 rounded-md text-xs font-semibold">
-                          {image.category}
-                        </div>
                       </div>
-                      <CardContent className="p-4">
-                        <h3 className="text-lg font-bold text-foreground group-hover:text-coral transition-colors mb-2 line-clamp-2">
-                          {image.title}
-                        </h3>
-                        {(i18n.language === "en" ? image.description_en : image.description_fr) &&
-                          (() => {
-                            const description = i18n.language === "en" ? image.description_en : image.description_fr;
-                            const isExpanded = expandedDescriptions.has(image.id);
-                            const shouldTruncate = description && description.length > 100;
-
-                            return (
-                              <div onClick={(e) => e.stopPropagation()}>
-                                <p
-                                  className={`text-sm text-muted-foreground leading-relaxed ${!isExpanded && shouldTruncate ? "line-clamp-3" : ""}`}
-                                >
-                                  {description}
-                                </p>
-                                {shouldTruncate && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setExpandedDescriptions((prev) => {
-                                        const newSet = new Set(prev);
-                                        if (isExpanded) {
-                                          newSet.delete(image.id);
-                                        } else {
-                                          newSet.add(image.id);
-                                        }
-                                        return newSet;
-                                      });
-                                    }}
-                                    className="text-xs text-coral font-medium mt-1 hover:underline"
-                                  >
-                                    {isExpanded
-                                      ? t("herosKwatt.readLess") || "Lire moins"
-                                      : t("herosKwatt.readMore") || "Lire plus"}
-                                  </button>
-                                )}
-                              </div>
-                            );
-                          })()}
-                      </CardContent>
                     </Card>
                   </CarouselItem>
                 ))}
@@ -273,42 +222,59 @@ const Mediatheque = () => {
         )}
       </div>
 
-      {/* Image Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-0">
-            <DialogTitle className="text-2xl font-bold flex items-center justify-between">
-              {selectedImageData?.title}
-              <Button variant="ghost" size="sm" onClick={closeDialog} className="hover:bg-gray-100">
-                <X className="h-4 w-4" />
+      {/* Visionneuse : défile toutes les photos de la catégorie affichée */}
+      <Dialog open={viewerIndex !== null} onOpenChange={(open) => !open && closeViewer()}>
+        <DialogContent className="max-w-5xl p-0 overflow-hidden bg-black border-0">
+          {viewerImage && (
+            <div className="relative flex items-center justify-center bg-black" style={{ height: "85vh" }}>
+              {viewerImage.category === "Vidéo" ? (
+                <video
+                  key={viewerImage.id}
+                  src={viewerImage.image_url}
+                  className="max-w-full max-h-full object-contain"
+                  controls
+                  autoPlay
+                />
+              ) : (
+                <img
+                  src={viewerImage.image_url}
+                  alt={viewerImage.title}
+                  className="max-w-full max-h-full object-contain"
+                />
+              )}
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={closeViewer}
+                className="absolute top-3 right-3 bg-white/10 hover:bg-white/20 text-white rounded-full"
+              >
+                <X className="h-5 w-5" />
               </Button>
-            </DialogTitle>
-          </DialogHeader>
-          {selectedImageData && (
-            <div className="space-y-4">
-              <div className="aspect-video overflow-hidden bg-black">
-                {selectedImageData.category === "Vidéo" ? (
-                  <video src={selectedImageData.image_url} className="w-full h-full object-contain" controls autoPlay />
-                ) : (
-                  <img
-                    src={selectedImageData.image_url}
-                    alt={selectedImageData.title}
-                    className="w-full h-full object-contain"
-                  />
-                )}
-              </div>
-              <div className="p-6 pt-0">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="bg-gradient-coral text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    {selectedImageData.category}
-                  </span>
-                </div>
-                {(i18n.language === "en" ? selectedImageData.description_en : selectedImageData.description_fr) && (
-                  <p className="text-muted-foreground leading-relaxed text-lg">
-                    {i18n.language === "en" ? selectedImageData.description_en : selectedImageData.description_fr}
-                  </p>
-                )}
-              </div>
+
+              {filteredImages.length > 1 && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={showPrev}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full h-10 w-10"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={showNext}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full h-10 w-10"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </Button>
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/10 text-white text-sm px-3 py-1 rounded-full">
+                    {(viewerIndex ?? 0) + 1} / {filteredImages.length}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </DialogContent>

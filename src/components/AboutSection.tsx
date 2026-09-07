@@ -172,10 +172,6 @@ const AboutSection = () => {
               {t("about.miss")}
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              <span className="font-medium text-gold">{t("about.heroesSpan")}: </span>
-              {t("about.heroes")}
-            </p>
-            <p className="text-lg text-muted-foreground leading-relaxed">
               <span className="font-medium text-gold">{t("about.funActSpan")}: </span>
               {t("about.funActivities")}
             </p>

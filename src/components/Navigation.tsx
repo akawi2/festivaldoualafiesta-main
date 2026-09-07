@@ -201,7 +201,7 @@ const Navigation = () => {
                       tabIndex={reserveDropdownOpen ? 0 : -1}
                       className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors"
                     >
-                      {t('miss.register')}
+                      {t('nav.registerAsMiss')}
                     </button>
 
                     <button
@@ -320,7 +320,7 @@ const Navigation = () => {
                     onClick={goToMissRegistration}
                     className="w-full text-white font-semibold bg-gold hover:bg-gold-dark border border-gold/30"
                   >
-                    {t('miss.register')}
+                    {t('nav.registerAsMiss')}
                   </Button>
                   <Button
                     onClick={goToStandForm}

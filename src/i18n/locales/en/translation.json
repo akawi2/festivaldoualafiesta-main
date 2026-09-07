@@ -8,7 +8,7 @@
     "contacts": "Contacts",
     "reserveStand": "Reserve my stand",
     "reserve": "Reserve",
-    "registerAsMiss": "Register as Miss",
+    "registerAsMiss": "Miss Registration",
     "missContest": "Miss Douala Fiesta 2026 Contest",
     "herosKwatt": "Kwat Heroes"
   },
@@ -47,7 +47,7 @@
     "point3": "A platform where our businesses engage directly with thousands of consumers",
     "point4": "A unique moment where our families come together, share, and build shared memories",
     "welcome": "Welcome to the official website of Douala Fiesta Festival 2026, fourteen (14) days of fruitful celebration, culture and sharing in the heart of Douala.",
-    "dates": "From December 19, 2026 to January 1, 2027, immerse yourself in a unique universe combining music, dance, gastronomy and local traditions.",
+    "dates": "From December 18, 2026 to January 1, 2027, immerse yourself in a unique universe combining music, dance, gastronomy and local traditions.",
     "mission": "Our mission",
     "missionText": "To promote Cameroonian and African culture, strengthen community living and provide a space for entertainment, exchange and showcasing local talent.",
     "approach": "Our approach",
@@ -175,10 +175,15 @@
     "readLess": "Read less",
     "readMore": "Read more"
   },
+  "homeGallery": {
+    "title": "A glimpse in",
+    "titleSpan": "pictures",
+    "viewAll": "View full gallery"
+  },
   "program": {
     "title": "Festival",
     "festival": "Program",
-    "description": "Discover the complete program of DOUALA FIESTA 2026 over 3 days of exceptional events.",
+    "description": "Discover the complete program of DOUALA FIESTA 2026 over 14 days of exceptional events.",
     "backToHome": "Back to home",
     "day": "Day",
     "noEvents": "No scheduled events",

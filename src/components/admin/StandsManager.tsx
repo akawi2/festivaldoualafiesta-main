@@ -69,10 +69,7 @@ export function StandsManager() {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from('stand_reservations')
-        .update({ status })
-        .eq('id', id);
+      const { error } = await supabase.rpc('admin_update_stand_status', { p_id: id, p_status: status });
 
       if (error) throw error;
       toast.success('Statut mis à jour');
@@ -85,10 +82,10 @@ export function StandsManager() {
 
   const updatePaymentStatus = async (id: string, paymentStatus: string) => {
     try {
-      const { error } = await supabase
-        .from('stand_reservations')
-        .update({ payment_status: paymentStatus })
-        .eq('id', id);
+      const { error } = await supabase.rpc('admin_update_stand_payment_status', {
+        p_id: id,
+        p_payment_status: paymentStatus,
+      });
 
       if (error) throw error;
       toast.success('Statut de paiement mis à jour');

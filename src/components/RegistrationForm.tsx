@@ -8,17 +8,37 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { generateRegistrationPDF } from "@/utils/pdfGenerator";
 import { useTranslation } from "@/hooks/useTranslation";
+import { getVisitorIp, getVisitorFingerprint } from "@/utils/visitorIdentity";
+import { buildWhatsAppUrl } from "@/utils/whatsapp";
+
+// Année du concours (voir TARGET_DATE dans HeroSection.tsx) : à mettre à jour chaque édition
+const COMPETITION_YEAR = 2026;
+
+function calculateAge(birthDate: Date, referenceDate: Date = new Date()): number {
+  let age = referenceDate.getFullYear() - birthDate.getFullYear();
+  const monthDiff = referenceDate.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && referenceDate.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
+// Éligibilité : avoir entre 18 et 25 ans au 1er janvier de l'année du concours
+function getEligibilityAge(birthDate: Date): number {
+  return calculateAge(birthDate, new Date(COMPETITION_YEAR, 0, 1));
+}
 
 type FormValues = {
   firstName: string;
   lastName: string;
   birthDate: Date;
-  age: number;
   height: string;
   birthPlace: string;
   neighborhood: string;
@@ -46,7 +66,6 @@ export function RegistrationForm() {
     birthDate: z.date({
       required_error: t("birthDateRequired"),
     }),
-    age: z.number().min(18, t("ageMinError")).max(28, t("ageMaxError")),
     height: z.string().regex(/^\d{1,3}$/, t("heightInvalid")),
     birthPlace: z.string().min(2, t("birthPlaceRequired")).max(100),
     neighborhood: z.string().min(2, t("neighborhoodRequired")).max(100),
@@ -113,6 +132,24 @@ export function RegistrationForm() {
       message: t("representationError"),
     }),
   }).superRefine((data, ctx) => {
+    // Âge calculé à partir de la date de naissance : 18-25 ans requis au 1er janvier de l'année du concours
+    if (data.birthDate) {
+      const eligibilityAge = getEligibilityAge(data.birthDate);
+      if (eligibilityAge < 18) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("ageMinError"),
+          path: ["birthDate"],
+        });
+      } else if (eligibilityAge > 25) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("ageMaxError"),
+          path: ["birthDate"],
+        });
+      }
+    }
+
     // Photo d'identité toujours obligatoire
     if (!data.idPhoto || !(data.idPhoto instanceof File)) {
       ctx.addIssue({
@@ -132,7 +169,7 @@ export function RegistrationForm() {
     }
 
     // Autorisation parentale obligatoire seulement si âge < 21 ans
-    if (data.age < 21) {
+    if (data.birthDate && calculateAge(data.birthDate) < 21) {
       if (!data.parentalAuth || !(data.parentalAuth instanceof File)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -163,8 +200,10 @@ export function RegistrationForm() {
     },
   });
 
-  const age = form.watch("age");
+  const birthDateValue = form.watch("birthDate");
+  const age = birthDateValue ? calculateAge(birthDateValue) : undefined;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
 
   async function uploadFile(file: File, path: string): Promise<string | null> {
     try {
@@ -250,11 +289,13 @@ export function RegistrationForm() {
       console.log("All files uploaded successfully. Inserting into database...");
 
       // Insert into database with all uploaded URLs
+      const [submitterIp, submitterFingerprint] = await Promise.all([getVisitorIp(), getVisitorFingerprint()]);
+
       const registrationData = {
         first_name: values.firstName,
         name: values.lastName,
         "date de naissance": format(values.birthDate, "yyyy-MM-dd"),
-        age: values.age,
+        age: calculateAge(values.birthDate),
         taille: values.height,
         city: values.birthPlace,
         borough: values.neighborhood,
@@ -264,6 +305,8 @@ export function RegistrationForm() {
         image_url: imageUrl,
         card_url: cardUrl,
         auth_url: authUrl,
+        submitter_ip: submitterIp,
+        submitter_fingerprint: submitterFingerprint,
       };
 
       console.log("Registration data to insert:", registrationData);
@@ -279,6 +322,15 @@ export function RegistrationForm() {
 
       console.log("Database insertion successful:", data);
 
+      setWhatsappUrl(
+        buildWhatsAppUrl(
+          `Bonjour, je viens de m'inscrire au concours Miss Douala Fiesta.\n` +
+            `Nom : ${values.firstName} ${values.lastName}\n` +
+            `Téléphone : ${values.phone}\n` +
+            `Ville : ${values.birthPlace}`,
+        ),
+      );
+
       // Generate PDF
       try {
         console.log("Generating PDF...");
@@ -287,7 +339,7 @@ export function RegistrationForm() {
             firstName: values.firstName,
             lastName: values.lastName,
             birthDate: values.birthDate,
-            age: values.age,
+            age: calculateAge(values.birthDate),
             height: values.height,
             birthPlace: values.birthPlace,
             neighborhood: values.neighborhood,
@@ -335,7 +387,6 @@ export function RegistrationForm() {
       "firstName",
       "lastName",
       "birthDate",
-      "age",
       "height",
       "birthPlace",
       "neighborhood",
@@ -351,6 +402,7 @@ export function RegistrationForm() {
   };
 
   return (
+    <>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="text-center mb-8">
@@ -389,7 +441,7 @@ export function RegistrationForm() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
               <FormField
                 control={form.control}
                 name="birthDate"
@@ -478,31 +530,6 @@ export function RegistrationForm() {
                     </FormItem>
                   );
                 }}
-              />
-
-              <FormField
-                control={form.control}
-                name="age"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>{t("age")}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={t("agePlaceholder")}
-                        {...field}
-                        value={field.value || ""}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, "");
-                          field.onChange(value ? parseInt(value) : 0);
-                        }}
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
               />
             </div>
 
@@ -784,5 +811,27 @@ export function RegistrationForm() {
         )}
       </form>
     </Form>
+
+    <Dialog open={!!whatsappUrl} onOpenChange={(open) => !open && setWhatsappUrl(null)}>
+      <DialogContent className="max-w-sm text-center">
+        <DialogHeader>
+          <DialogTitle className="text-center">Inscription envoyée !</DialogTitle>
+          <DialogDescription className="text-center">
+            Vous pouvez continuer la conversation sur WhatsApp pour la suite de votre inscription.
+          </DialogDescription>
+        </DialogHeader>
+        <Button
+          className="w-full bg-[#25D366] hover:bg-[#1ebe57] text-white"
+          onClick={() => {
+            if (whatsappUrl) window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+            setWhatsappUrl(null);
+          }}
+        >
+          <MessageCircle className="h-4 w-4 mr-2" />
+          Continuer sur WhatsApp
+        </Button>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

@@ -12,6 +12,17 @@ dist
 dist-ssr
 *.local
 
+# Env files with real deployment secrets — .env.example stays committed
+.env
+.env.production
+
+# Local-only production data snapshot (candidate photos, ID cards, parental
+# authorizations...) used to seed the local self-hosted Supabase for testing.
+# Never commit real personal documents — see supabase-selfhost/README.md for
+# the automated data-seed/storage-seed alternative used on actual deploys.
+storage-export/
+dbdoualafiesta.zip
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

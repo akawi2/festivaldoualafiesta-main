@@ -2,11 +2,18 @@ version: "3.8"
 
 services:
   douala-fiesta:
-    build: .
+    build:
+      context: .
+      args:
+        # Lues depuis le .env à côté de ce fichier (voir .env.example) —
+        # à remplir avec l'URL et la clé anon du Supabase self-hosted déployé
+        # séparément (service "supabase-selfhost"), une fois qu'il tourne.
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
     image: douala-fiesta:latest
     restart: unless-stopped
     networks:
-      - proxy
+      - dokploy-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.douala-fiesta.rule=Host(`festivaldoualafiesta.cm`) || Host(`www.festivaldoualafiesta.cm`)"
@@ -20,6 +27,6 @@ services:
       - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.scheme=https"
 
 networks:
-  proxy:
+  dokploy-network:
     external: true
-    name: proxy
+    name: dokploy-network
