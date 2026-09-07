@@ -16,12 +16,12 @@ services:
       - dokploy-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.douala-fiesta.rule=Host(`festivaldoualafiesta.cm`) || Host(`www.festivaldoualafiesta.cm`)"
+      - "traefik.http.routers.douala-fiesta.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
       - "traefik.http.routers.douala-fiesta.entrypoints=websecure"
       - "traefik.http.routers.douala-fiesta.tls.certresolver=letsencrypt"
       - "traefik.http.services.douala-fiesta.loadbalancer.server.port=80"
       # Redirection HTTP -> HTTPS
-      - "traefik.http.routers.douala-fiesta-http.rule=Host(`festivaldoualafiesta.cm`) || Host(`www.festivaldoualafiesta.cm`)"
+      - "traefik.http.routers.douala-fiesta-http.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
       - "traefik.http.routers.douala-fiesta-http.entrypoints=web"
       - "traefik.http.routers.douala-fiesta-http.middlewares=douala-fiesta-redirect"
       - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.scheme=https"
