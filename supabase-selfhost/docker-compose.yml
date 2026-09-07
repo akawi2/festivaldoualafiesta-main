@@ -69,7 +69,8 @@ services:
   # See: https://github.com/orgs/supabase/discussions/48048
   api-gw:
     container_name: supabase-envoy
-    image: envoyproxy/envoy:v1.39.0
+    build:
+      context: ./volumes/api/envoy
     restart: unless-stopped
     networks:
       default:
@@ -114,11 +115,6 @@ services:
       # Which port Traefik should forward to
       - "traefik.http.services.supabase-service.loadbalancer.server.port=8000"
       - "traefik.docker.network=proxy"
-    volumes:
-      - ./volumes/api/envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
-      - ./volumes/api/envoy/cds.yaml:/etc/envoy/cds.yaml:ro
-      - ./volumes/api/envoy/lds.template.yaml:/etc/envoy/lds.template.yaml:ro
-      - ./volumes/api/envoy/docker-entrypoint.sh:/docker-entrypoint.sh:ro
     environment:
       ANON_KEY: ${ANON_KEY}
       SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
@@ -501,24 +497,14 @@ services:
   db:
     container_name: supabase-db
     # To upgrade an existing Postgres 15 database in place, see utils/upgrade-pg17.sh.
-    image: supabase/postgres:17.6.1.136
+    build:
+      context: ./volumes/db
     restart: unless-stopped
     volumes:
-      - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
-      # Must be superuser to create event trigger
-      - ./volumes/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
-      # Must be superuser to alter reserved role
-      - ./volumes/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:Z
-      # Initialize the database settings with JWT_SECRET and JWT_EXP
-      - ./volumes/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:Z
-      # PGDATA directory is persisted between restarts
+      # PGDATA directory is persisted between restarts. The init SQL scripts
+      # (realtime/webhooks/roles/jwt/_supabase/logs/pooler) are baked into
+      # the image (see ./volumes/db/Dockerfile) rather than bind-mounted.
       - ./volumes/db/data:/var/lib/postgresql/data:Z
-      # Changes required for internal supabase data such as _analytics
-      - ./volumes/db/_supabase.sql:/docker-entrypoint-initdb.d/migrations/97-_supabase.sql:Z
-      # Changes required for Analytics support
-      - ./volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
-      # Changes required for Pooler support
-      - ./volumes/db/pooler.sql:/docker-entrypoint-initdb.d/migrations/99-pooler.sql:Z
       # Use named volume to persist pgsodium decryption key between restarts
       - db-config:/etc/postgresql-custom
     healthcheck:
@@ -556,15 +542,14 @@ services:
   # Update the DATABASE_URL if you are using an external Postgres database
   supavisor:
     container_name: supabase-pooler
-    image: supabase/supavisor:2.9.5
+    build:
+      context: ./volumes/pooler
     restart: unless-stopped
     ports:
       # Bound to localhost only: direct Postgres access (psql, pg_dump, migration
       # tools) stays reachable via SSH tunnel, but is never exposed to the internet.
       - "127.0.0.1:${POSTGRES_PORT}:5432"
       - "127.0.0.1:${POOLER_PROXY_PORT_TRANSACTION}:6543"
-    volumes:
-      - ./volumes/pooler/pooler.exs:/etc/pooler/pooler.exs:ro,z
     healthcheck:
       test:
         [
