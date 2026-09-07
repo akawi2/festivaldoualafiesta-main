@@ -79,11 +79,10 @@ services:
         aliases:
           - envoy
           - kong
-      # Reachable by Dokploy's Domains-tab routing on the shared external
-      # "dokploy-network" overlay network (see bottom of this file). Not
-      # published to the host directly — Traefik is the only public
-      # entrypoint.
-      dokploy-network: {}
+      # Reachable by Traefik on the shared external "proxy" network (see
+      # bottom of this file). Not published to the host directly — Traefik
+      # is the only public entrypoint, matching the rest of the cimania infra.
+      proxy: {}
     healthcheck:
       # Using a TCP port check because this image does not include curl or wget.
       test: ["CMD-SHELL", "timeout 1 bash -c '</dev/tcp/127.0.0.1/8000'"]
@@ -95,14 +94,27 @@ services:
         condition: service_healthy
     # Bound to localhost only — safe to leave on: lets you reach the gateway
     # directly for local testing/admin, without opening it to the internet.
-    # No Traefik labels here: this server's Traefik runs in Docker Swarm
-    # mode and only discovers routes registered through Dokploy's own
-    # "Domains" tab per service (target: api-gw, port 8000) — it never
-    # reads traefik.* labels on plain docker-compose containers. If this
-    # compose is ever deployed on a plain Traefik (non-Swarm, label-based
-    # discovery) host instead, labels will need to be reintroduced here.
+    # Traefik (via the "proxy" network + labels below) remains the public
+    # path in.
     ports:
       - "127.0.0.1:${API_GW_HTTP_PORT:-8000}:8000/tcp"
+    labels:
+      - "traefik.enable=true"
+      # Main router - HTTPS
+      - "traefik.http.routers.supabase.rule=Host(`${SUPABASE_PUBLIC_HOSTNAME}`)"
+      - "traefik.http.routers.supabase.entrypoints=websecure"
+      - "traefik.http.routers.supabase.tls=true"
+      - "traefik.http.routers.supabase.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.supabase.service=supabase-service"
+      # HTTP -> HTTPS redirect
+      - "traefik.http.routers.supabase-http.rule=Host(`${SUPABASE_PUBLIC_HOSTNAME}`)"
+      - "traefik.http.routers.supabase-http.entrypoints=web"
+      - "traefik.http.routers.supabase-http.middlewares=supabase-redirect"
+      - "traefik.http.middlewares.supabase-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.supabase-redirect.redirectscheme.permanent=true"
+      # Which port Traefik should forward to
+      - "traefik.http.services.supabase-service.loadbalancer.server.port=8000"
+      - "traefik.docker.network=proxy"
     environment:
       ANON_KEY: ${ANON_KEY}
       SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
@@ -712,5 +724,5 @@ volumes:
   deno-cache:
 
 networks:
-  dokploy-network:
+  proxy:
     external: true

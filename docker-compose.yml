@@ -13,17 +13,25 @@ services:
     image: douala-fiesta:latest
     restart: unless-stopped
     networks:
-      - dokploy-network
-    # No Traefik labels here: this server's Traefik runs in Docker Swarm
-    # mode and only discovers routes registered through Dokploy's own
-    # "Domains" tab per service (Compose/port/domain) — it never reads
-    # traefik.* labels on plain docker-compose containers. Configure the
-    # domain there (port 80). Attached to dokploy-network (Dokploy's own
-    # overlay network) since its Domains-tab routing needs the container
-    # reachable there. If this compose is ever deployed on a plain Traefik
-    # (non-Swarm, label-based discovery) host instead, labels will need to
-    # be reintroduced and the network changed back to an external "proxy".
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      # Main router - HTTPS
+      - "traefik.http.routers.douala-fiesta.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
+      - "traefik.http.routers.douala-fiesta.entrypoints=websecure"
+      - "traefik.http.routers.douala-fiesta.tls=true"
+      - "traefik.http.routers.douala-fiesta.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.douala-fiesta.service=douala-fiesta-service"
+      # HTTP -> HTTPS redirect
+      - "traefik.http.routers.douala-fiesta-http.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
+      - "traefik.http.routers.douala-fiesta-http.entrypoints=web"
+      - "traefik.http.routers.douala-fiesta-http.middlewares=douala-fiesta-redirect"
+      - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.permanent=true"
+      # Which port Traefik should forward to
+      - "traefik.http.services.douala-fiesta-service.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
 
 networks:
-  dokploy-network:
+  proxy:
     external: true
