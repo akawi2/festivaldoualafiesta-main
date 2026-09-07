@@ -94,21 +94,16 @@ services:
         condition: service_healthy
     # Bound to localhost only — safe to leave on: lets you reach the gateway
     # directly for local testing/admin, without opening it to the internet.
-    # Traefik (via the "dokploy-network" network + labels below) remains the
-    # public path in.
+    # Traefik (routed via Dokploy's own "Domains" UI, see note above) remains
+    # the public path in.
     ports:
       - "127.0.0.1:${API_GW_HTTP_PORT:-8000}:8000/tcp"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.supabase.rule=Host(`${SUPABASE_PUBLIC_HOSTNAME}`)"
-      - "traefik.http.routers.supabase.entrypoints=websecure"
-      - "traefik.http.routers.supabase.tls.certresolver=letsencrypt"
-      - "traefik.http.services.supabase.loadbalancer.server.port=8000"
-      # Redirection HTTP -> HTTPS
-      - "traefik.http.routers.supabase-http.rule=Host(`${SUPABASE_PUBLIC_HOSTNAME}`)"
-      - "traefik.http.routers.supabase-http.entrypoints=web"
-      - "traefik.http.routers.supabase-http.middlewares=supabase-redirect"
-      - "traefik.http.middlewares.supabase-redirect.redirectscheme.scheme=https"
+    # Pas de labels Traefik ici : sur Dokploy, le routage (domaine, port,
+    # certificat) se configure entièrement via l'onglet "Domains" de ce
+    # service dans l'UI (cible: api-gw, port 8000) — des labels manuels en
+    # plus créent un routeur en double du même nom et cassent le routage.
+    # Si ce compose est un jour déployé hors Dokploy (Traefik "nu"), il
+    # faudra réintroduire des labels traefik.* ici.
     volumes:
       - ./volumes/api/envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
       - ./volumes/api/envoy/cds.yaml:/etc/envoy/cds.yaml:ro
