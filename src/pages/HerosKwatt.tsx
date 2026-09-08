@@ -11,6 +11,7 @@ import lanceGauche from "@/assets/lance-gauche.png";
 import lanceDroite from "@/assets/lance-droite.png";
 import { SEO } from "@/components/SEO";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
 
 interface Hero {
   id: string;
@@ -172,8 +173,9 @@ const HerosKwatt = () => {
         ogTitle="Héros du Kwatt - Découvrez et votez pour les talents locaux de Douala"
         ogDescription="Soutenez les héros du Kwatt, ces talents qui font rayonner Douala. Artistes, entrepreneurs, et personnalités inspirantes à découvrir."
       />
+      <Navigation />
       {/* Header avec navigation retour */}
-      <div className="bg-gradient-hero text-white py-20">
+      <div className="bg-gradient-hero text-white pt-36 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/">
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 mb-6">
