@@ -418,14 +418,14 @@ services:
       S3_PROTOCOL_ACCESS_KEY_ID: ${S3_PROTOCOL_ACCESS_KEY_ID}
       S3_PROTOCOL_ACCESS_KEY_SECRET: ${S3_PROTOCOL_ACCESS_KEY_SECRET}
     volumes:
-      - ./volumes/storage:/var/lib/storage:z
+      - ${STORAGE_HOST_PATH:-./volumes/storage}:/var/lib/storage:z
 
   imgproxy:
     container_name: supabase-imgproxy
     image: darthsim/imgproxy:v3.30.1
     restart: unless-stopped
     volumes:
-      - ./volumes/storage:/var/lib/storage:z
+      - ${STORAGE_HOST_PATH:-./volumes/storage}:/var/lib/storage:z
     healthcheck:
       test:
         [
@@ -511,7 +511,16 @@ services:
       # PGDATA directory is persisted between restarts. The init SQL scripts
       # (realtime/webhooks/roles/jwt/_supabase/logs/pooler) are baked into
       # the image (see ./volumes/db/Dockerfile) rather than bind-mounted.
-      - ./volumes/db/data:/var/lib/postgresql/data:Z
+      #
+      # IMPORTANT on Dokploy (or any host that re-`git clone`s the repo into
+      # a fresh checkout on every deploy): the default ./volumes/db/data path
+      # lives INSIDE that ephemeral checkout, so a redeploy silently wipes
+      # Postgres back to empty and every migration/seed reruns from scratch.
+      # Set DB_DATA_HOST_PATH in that host's .env to a path OUTSIDE the repo
+      # checkout (e.g. Dokploy's persistent volumes dir) so data survives
+      # redeploys. Left unset, this defaults to the old in-repo path, fine
+      # for local dev where the checkout isn't reset on every deploy.
+      - ${DB_DATA_HOST_PATH:-./volumes/db/data}:/var/lib/postgresql/data:Z
       # Use named volume to persist pgsodium decryption key between restarts
       - db-config:/etc/postgresql-custom
     healthcheck:
