@@ -59,13 +59,22 @@ const Navigation = () => {
 
   const scrollToSection = (href: string) => {
     setActiveSection(href);
+    setIsOpen(false);
+
+    // Ces sections n'existent que sur la page d'accueil : depuis une autre
+    // page, on y retourne avec le hash, et Index.tsx se charge de défiler
+    // une fois monté.
+    if (location.pathname !== "/") {
+      navigate(`/${href}`);
+      return;
+    }
+
     const element = document.querySelector(href);
     if (element) {
       const yOffset = -100; // Offset pour la navbar fixe
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: "smooth" });
     }
-    setIsOpen(false);
   };
 
   const goToStandForm = () => {

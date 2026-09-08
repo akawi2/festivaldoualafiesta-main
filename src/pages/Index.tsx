@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -7,6 +9,20 @@ import FloatingRegisterButton from "@/components/FloatingRegisterButton";
 import { SEO } from "@/components/SEO";
 
 const Index = () => {
+  const location = useLocation();
+
+  // Permet à la Navigation d'un lien "#accueil"/"#apropos" depuis une autre
+  // page de retomber ici puis défiler jusqu'à la bonne section.
+  useEffect(() => {
+    if (!location.hash) return;
+    const element = document.querySelector(location.hash);
+    if (element) {
+      const yOffset = -100;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  }, [location.hash]);
+
   return (
     <div className="min-h-screen overflow-x-clip">
       <SEO

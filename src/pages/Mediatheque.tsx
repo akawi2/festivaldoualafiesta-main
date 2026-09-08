@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { SEO } from "@/components/SEO";
+import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
 interface GalleryImage {
@@ -109,8 +110,9 @@ const Mediatheque = () => {
         ogTitle="Médiathèque Festival Douala Fiesta - Photos et Vidéos des événements"
         ogDescription="Découvrez les photos et vidéos des plus beaux moments du Festival Douala Fiesta. Culture, musique, danse et art africain."
       />
+      <Navigation />
       {/* Header */}
-      <div className="bg-gradient-hero text-white py-20">
+      <div className="bg-gradient-hero text-white py-20 pt-36">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Button variant="ghost" onClick={() => navigate("/")} className="text-white hover:bg-white/10 mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />

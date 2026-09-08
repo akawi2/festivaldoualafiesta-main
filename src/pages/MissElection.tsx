@@ -41,6 +41,7 @@ import { CompleteRegistration } from "@/components/CompleteRegistration";
 import { useTranslation as useCustomTranslation } from "@/hooks/useTranslation";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { SEO } from "@/components/SEO";
+import Navigation from "@/components/Navigation";
 
 // Imports des images candidates
 import candidate1 from "@/assets/candidate-1.jpg";
@@ -159,6 +160,14 @@ const MissElection = () => {
   const autoplay = React.useRef(
     Autoplay({
       delay: 4000,
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+    }),
+  );
+
+  const galleryAutoplay = React.useRef(
+    Autoplay({
+      delay: 3000,
       stopOnInteraction: false,
       stopOnMouseEnter: true,
     }),
@@ -405,9 +414,10 @@ const MissElection = () => {
         ogTitle="Miss Douala Fiesta 2025 - Votez pour votre candidate favorite"
         ogDescription="Découvrez les candidates de Miss Douala Fiesta 2025 et votez pour votre favorite dans cette compétition prestigieuse."
       />
+      <Navigation />
       {/* Header avec image de fond */}
       <div
-        className="relative py-24 overflow-hidden"
+        className="relative py-24 pt-40 overflow-hidden"
         style={{
           backgroundImage: `url(${missBannerBg})`,
           backgroundSize: "cover",
@@ -982,41 +992,45 @@ const MissElection = () => {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {(selectedGalleryCategory === t("mediatheque.all")
-                ? galleryImages
-                : galleryImages.filter((img) => img.category === selectedGalleryCategory)
-              ).map((image) => (
-                <Card
-                  key={image.id}
-                  className="overflow-hidden hover:shadow-xl transition-all duration-500 group border-0 bg-white/50 backdrop-blur-sm cursor-pointer"
-                  onClick={() => openGalleryDialog(image.id)}
-                >
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={image.image_url}
-                      alt="Miss Douala Fiesta Gallery"
-                      className="w-full h-72 object-cover object-top group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <Carousel
+              key={selectedGalleryCategory}
+              plugins={[galleryAutoplay.current]}
+              opts={{ align: "start", loop: true }}
+              className="w-full px-4 sm:px-8 lg:px-12"
+            >
+              <CarouselContent className="-ml-4">
+                {(selectedGalleryCategory === t("mediatheque.all")
+                  ? galleryImages
+                  : galleryImages.filter((img) => img.category === selectedGalleryCategory)
+                ).map((image) => (
+                  <CarouselItem key={image.id} className="pl-4 basis-1/2 sm:basis-1/3 lg:basis-1/4">
+                    <Card
+                      className="overflow-hidden hover:shadow-xl transition-all duration-500 group border-0 bg-white/50 backdrop-blur-sm cursor-pointer"
+                      onClick={() => openGalleryDialog(image.id)}
+                    >
+                      <div className="relative aspect-square overflow-hidden">
+                        <img
+                          src={image.image_url}
+                          alt="Miss Douala Fiesta Gallery"
+                          className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                    {/* Badge de catégorie */}
-                    {image.category && (
-                      <div className="absolute top-3 left-3 bg-gradient-gold text-white px-2 py-1 rounded-md text-xs font-semibold">
-                        {image.category}
+                        {/* Icône camera au survol */}
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 scale-75 group-hover:scale-100">
+                          <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
+                            <Camera className="h-6 w-6 text-white" />
+                          </div>
+                        </div>
                       </div>
-                    )}
-
-                    {/* Icône camera au survol */}
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 scale-75 group-hover:scale-100">
-                      <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                        <Camera className="h-6 w-6 text-white" />
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden sm:flex" />
+              <CarouselNext className="hidden sm:flex" />
+            </Carousel>
 
             {/* Section statistiques de la galerie */}
             <div className="mt-12 text-center">
@@ -1098,6 +1112,7 @@ const MissElection = () => {
                       images={displayImages}
                       alt={selectedCandidate.name}
                       className="w-full h-full"
+                      showControls
                     />
                     <div className="absolute top-3 right-3 flex items-center gap-1 z-10">
                       {getRankIcon(rank)}

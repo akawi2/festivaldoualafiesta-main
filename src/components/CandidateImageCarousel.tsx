@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CandidateImageCarouselProps {
   images: string[];
   alt: string;
   className?: string;
+  showControls?: boolean;
 }
 
-export const CandidateImageCarousel = ({ images, alt, className }: CandidateImageCarouselProps) => {
+const AUTOPLAY_DELAY = 3000;
+
+export const CandidateImageCarousel = ({ images, alt, className, showControls = false }: CandidateImageCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -15,10 +19,26 @@ export const CandidateImageCarousel = ({ images, alt, className }: CandidateImag
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 3000);
+    }, AUTOPLAY_DELAY);
 
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [images.length, currentIndex]);
+
+  const showPrev = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    },
+    [images.length],
+  );
+
+  const showNext = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    },
+    [images.length],
+  );
 
   if (images.length === 0) return null;
 
@@ -37,6 +57,28 @@ export const CandidateImageCarousel = ({ images, alt, className }: CandidateImag
         />
       ))}
 
+      {/* Prev/next controls */}
+      {showControls && images.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={showPrev}
+            aria-label="Photo précédente"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-navy shadow-lg transition-colors hover:bg-white"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            type="button"
+            onClick={showNext}
+            aria-label="Photo suivante"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-navy shadow-lg transition-colors hover:bg-white"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </>
+      )}
+
       {/* Dots indicator */}
       {images.length > 1 && (
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
@@ -45,8 +87,8 @@ export const CandidateImageCarousel = ({ images, alt, className }: CandidateImag
               key={index}
               className={cn(
                 "rounded-full bg-white/80 transition-all duration-300",
-                index === currentIndex 
-                  ? "w-2 h-2 scale-125 bg-gold shadow-lg" 
+                index === currentIndex
+                  ? "w-2 h-2 scale-125 bg-gold shadow-lg"
                   : "w-1.5 h-1.5"
               )}
             />
