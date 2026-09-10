@@ -18,6 +18,9 @@ USING (bucket_id = 'program-events' AND auth.role() = 'authenticated');
 
 -- Modifier les politiques de la table program_events
 DROP POLICY IF EXISTS "Authenticated users can manage program events" ON program_events;
+-- Already created by 20250907194926; guard against replaying this
+-- migration on a fresh project.
+DROP POLICY IF EXISTS "Admins can manage program events" ON program_events;
 
 CREATE POLICY "Admins can manage program events"
 ON program_events FOR ALL
