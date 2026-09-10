@@ -1,9 +1,13 @@
 import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import heroImage from "@/assets/hero-douala-fiesta-new.jpg";
+import heroCarousel1 from "@/assets/hero-carousel-1.jpg";
+import heroCarousel2 from "@/assets/hero-carousel-2.jpg";
 import decorBorder from "@/assets/deco-afrique-border.png";
 import cudLogo from "@/assets/cud.png";
+
+const HERO_BACKGROUND_IMAGES = [heroCarousel1, heroCarousel2];
+const HERO_BACKGROUND_DELAY = 5000;
 
 const TARGET_DATE = new Date("2026-12-18T00:00:00").getTime();
 
@@ -21,9 +25,18 @@ const HeroSection = () => {
   const { t } = useTranslation();
   const [showBorder, setShowBorder] = useState(false);
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
+  const [bgIndex, setBgIndex] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => setTimeLeft(getTimeLeft()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(
+      () => setBgIndex((prev) => (prev + 1) % HERO_BACKGROUND_IMAGES.length),
+      HERO_BACKGROUND_DELAY,
+    );
     return () => clearInterval(id);
   }, []);
 
@@ -51,11 +64,17 @@ const HeroSection = () => {
 
   return (
     <section id="accueil" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
+      {/* Background Carousel */}
+      <div className="absolute inset-0">
+        {HERO_BACKGROUND_IMAGES.map((image, index) => (
+          <div
+            key={image}
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${
+              index === bgIndex ? "opacity-100" : "opacity-0"
+            }`}
+            style={{ backgroundImage: `url(${image})` }}
+          />
+        ))}
         <div className="absolute inset-0 bg-gradient-to-r from-navy/90 via-navy/70 to-transparent"></div>
       </div>
 

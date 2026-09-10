@@ -22,6 +22,8 @@ const Navigation = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [reserveDropdownOpen, setReserveDropdownOpen] = useState(false);
   const reserveRef = useRef<HTMLDivElement>(null);
+  const [mobileReserveOpen, setMobileReserveOpen] = useState(false);
+  const mobileReserveRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!reserveDropdownOpen) return;
@@ -33,6 +35,17 @@ const Navigation = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [reserveDropdownOpen]);
+
+  useEffect(() => {
+    if (!mobileReserveOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileReserveRef.current && !mobileReserveRef.current.contains(event.target as Node)) {
+        setMobileReserveOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [mobileReserveOpen]);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -257,8 +270,55 @@ const Navigation = () => {
             </DropdownMenu>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+          {/* Mobile: CTA Inscription + menu button, toujours visibles sans ouvrir le menu complet */}
+          <div className="md:hidden flex items-center gap-2">
+            <div className="relative" ref={mobileReserveRef}>
+              <Button
+                onClick={() => setMobileReserveOpen((open) => !open)}
+                size="sm"
+                className="relative overflow-hidden text-white font-semibold shadow-gold border border-gold/30"
+                style={{
+                  backgroundImage: `url(${patternBg})`,
+                  backgroundSize: '20px 20px',
+                  backgroundRepeat: 'repeat'
+                }}
+              >
+                {t('nav.reserve')}
+              </Button>
+
+              <div
+                className={`absolute top-full right-0 mt-3 z-50 transition-all duration-200 ease-out ${
+                  mobileReserveOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
+                }`}
+              >
+                <div className="absolute -top-1.5 right-4 w-3 h-3 bg-background border-l border-t border-border rotate-45" />
+
+                <div className="relative flex flex-col gap-2 bg-background border border-border rounded-2xl shadow-lg p-2 w-56">
+                  <button
+                    onClick={() => {
+                      goToMissRegistration();
+                      setMobileReserveOpen(false);
+                    }}
+                    tabIndex={mobileReserveOpen ? 0 : -1}
+                    className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors text-center"
+                  >
+                    {t('nav.registerAsMiss')}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      goToStandForm();
+                      setMobileReserveOpen(false);
+                    }}
+                    tabIndex={mobileReserveOpen ? 0 : -1}
+                    className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors text-center"
+                  >
+                    {t('nav.reserveStand')}
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <Button
               variant="ghost"
               size="icon"
@@ -321,24 +381,6 @@ const Navigation = () => {
               ))}
 
               <div className="pt-4 space-y-2">
-                <div className="space-y-2">
-                  <span className="block text-sm font-semibold text-muted-foreground px-1">
-                    {t('nav.reserve')}
-                  </span>
-                  <Button
-                    onClick={goToMissRegistration}
-                    className="w-full text-white font-semibold bg-gold hover:bg-gold-dark border border-gold/30"
-                  >
-                    {t('nav.registerAsMiss')}
-                  </Button>
-                  <Button
-                    onClick={goToStandForm}
-                    className="w-full text-white font-semibold bg-gold hover:bg-gold-dark border border-gold/30"
-                  >
-                    {t('nav.reserveStand')}
-                  </Button>
-                </div>
-
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
