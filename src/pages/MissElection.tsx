@@ -501,9 +501,13 @@ const MissElection = () => {
           </DialogHeader>
 
           <Tabs defaultValue="register" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="register">{t("miss.register")}</TabsTrigger>
-              <TabsTrigger value="retrieve">{tCustom("retrieveRegistrationTitle")}</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 h-auto gap-1">
+              <TabsTrigger value="register" className="whitespace-normal text-xs sm:text-sm py-2 h-auto leading-tight">
+                {t("miss.register")}
+              </TabsTrigger>
+              <TabsTrigger value="retrieve" className="whitespace-normal text-xs sm:text-sm py-2 h-auto leading-tight">
+                {tCustom("retrieveRegistrationTitle")}
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="register" className="mt-6">
