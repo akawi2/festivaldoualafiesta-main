@@ -1,37 +1,47 @@
-version: "3.8"
+# Le front (service "douala-fiesta" ci-dessous) n'est PLUS déployé via ce
+# compose / Dokploy : il est maintenant déployé comme site statique sur
+# l'hébergement mutualisé, via son outil "Deploy Web App" (déploiement
+# depuis GitHub). Seul supabase-selfhost/docker-compose.yml reste déployé
+# via Dokploy sur le VPS.
+#
+# Ce service reste défini ici (commenté) pour référence / si on doit un
+# jour revenir à un déploiement Docker du front — décommenter tel quel pour
+# réactiver (et supprimer le "services: {}" ci-dessous).
 
-services:
-  douala-fiesta:
-    build:
-      context: .
-      args:
-        # Lues depuis le .env à côté de ce fichier (voir .env.example) —
-        # à remplir avec l'URL et la clé anon du Supabase self-hosted déployé
-        # séparément (service "supabase-selfhost"), une fois qu'il tourne.
-        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
-        VITE_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
-    image: douala-fiesta:latest
-    restart: unless-stopped
-    networks:
-      - proxy
-    labels:
-      - "traefik.enable=true"
-      # Main router - HTTPS
-      - "traefik.http.routers.douala-fiesta.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
-      - "traefik.http.routers.douala-fiesta.entrypoints=websecure"
-      - "traefik.http.routers.douala-fiesta.tls=true"
-      - "traefik.http.routers.douala-fiesta.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.douala-fiesta.service=douala-fiesta-service"
-      # HTTP -> HTTPS redirect
-      - "traefik.http.routers.douala-fiesta-http.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
-      - "traefik.http.routers.douala-fiesta-http.entrypoints=web"
-      - "traefik.http.routers.douala-fiesta-http.middlewares=douala-fiesta-redirect"
-      - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.permanent=true"
-      # Which port Traefik should forward to
-      - "traefik.http.services.douala-fiesta-service.loadbalancer.server.port=80"
-      - "traefik.docker.network=proxy"
+services: {}
 
-networks:
-  proxy:
-    external: true
+# services:
+#   douala-fiesta:
+#     build:
+#       context: .
+#       args:
+#         # Lues depuis le .env à côté de ce fichier (voir .env.example) —
+#         # à remplir avec l'URL et la clé anon du Supabase self-hosted déployé
+#         # séparément (service "supabase-selfhost"), une fois qu'il tourne.
+#         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+#         VITE_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
+#     image: douala-fiesta:latest
+#     restart: unless-stopped
+#     networks:
+#       - proxy
+#     labels:
+#       - "traefik.enable=true"
+#       # Main router - HTTPS
+#       - "traefik.http.routers.douala-fiesta.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
+#       - "traefik.http.routers.douala-fiesta.entrypoints=websecure"
+#       - "traefik.http.routers.douala-fiesta.tls=true"
+#       - "traefik.http.routers.douala-fiesta.tls.certresolver=letsencrypt"
+#       - "traefik.http.routers.douala-fiesta.service=douala-fiesta-service"
+#       # HTTP -> HTTPS redirect
+#       - "traefik.http.routers.douala-fiesta-http.rule=Host(`${APP_PUBLIC_HOSTNAME:-festivaldoualafiesta.cm}`)"
+#       - "traefik.http.routers.douala-fiesta-http.entrypoints=web"
+#       - "traefik.http.routers.douala-fiesta-http.middlewares=douala-fiesta-redirect"
+#       - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.scheme=https"
+#       - "traefik.http.middlewares.douala-fiesta-redirect.redirectscheme.permanent=true"
+#       # Which port Traefik should forward to
+#       - "traefik.http.services.douala-fiesta-service.loadbalancer.server.port=80"
+#       - "traefik.docker.network=proxy"
+#
+# networks:
+#   proxy:
+#     external: true
