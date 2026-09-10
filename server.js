@@ -83,6 +83,16 @@ const server = createServer(async (req, res) => {
   }
 });
 
+const distIndex = join(DIST_DIR, "index.html");
+const distReady = await stat(distIndex).catch(() => null);
+if (!distReady) {
+  console.error(
+    `dist/index.html not found (looked in ${DIST_DIR}). The app hasn't been built. ` +
+      `Run "npm run build" (or check that the "postinstall" script ran during deploy) before starting this server.`,
+  );
+  process.exit(1);
+}
+
 server.listen(PORT, () => {
   console.log(`Douala Fiesta static server listening on port ${PORT}`);
 });
