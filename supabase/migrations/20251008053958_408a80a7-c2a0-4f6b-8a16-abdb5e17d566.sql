@@ -17,8 +17,8 @@ CREATE OR REPLACE FUNCTION public.submit_stand_reservation(
   p_stand_type text,
   p_stand_name text,
   p_stand_phone text,
-  p_total_price integer DEFAULT NULL,
-  p_quantity integer DEFAULT 1
+  p_quantity integer DEFAULT 1,
+  p_total_price integer DEFAULT NULL
 )
 RETURNS uuid
 LANGUAGE plpgsql
