@@ -1,4 +1,9 @@
 -- Update submit_stand_reservation function to accept and store price and total_price
+-- DROP first: CREATE OR REPLACE requires existing parameter names to stay
+-- identical, which breaks if the previously-applied version on this
+-- project ended up with different parameter names for this same
+-- (text,text,text,integer,integer) signature.
+DROP FUNCTION IF EXISTS public.submit_stand_reservation(text, text, text, integer, integer);
 CREATE OR REPLACE FUNCTION public.submit_stand_reservation(
   p_stand_type text, 
   p_stand_name text, 

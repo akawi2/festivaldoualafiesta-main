@@ -1,5 +1,6 @@
 -- Replace submit_stand_reservation function with corrected parameter order
 -- All parameters with defaults must come after required parameters
+DROP FUNCTION IF EXISTS public.submit_stand_reservation(text, text, text, integer, integer, integer);
 CREATE OR REPLACE FUNCTION public.submit_stand_reservation(
   p_stand_type text,
   p_stand_name text,
