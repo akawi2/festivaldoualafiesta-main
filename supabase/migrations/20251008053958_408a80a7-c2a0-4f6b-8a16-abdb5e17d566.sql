@@ -14,11 +14,11 @@ ADD CONSTRAINT positive_quantity CHECK (quantity > 0);
 
 -- Update the submit_stand_reservation function to handle quantity and total_price
 CREATE OR REPLACE FUNCTION public.submit_stand_reservation(
-  p_stand_type text, 
-  p_stand_name text, 
+  p_stand_type text,
+  p_stand_name text,
   p_stand_phone text,
-  p_quantity integer DEFAULT 1,
-  p_total_price integer
+  p_total_price integer DEFAULT NULL,
+  p_quantity integer DEFAULT 1
 )
 RETURNS uuid
 LANGUAGE plpgsql
