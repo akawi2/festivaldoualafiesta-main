@@ -67,7 +67,8 @@ const Navigation = () => {
 
   const activitiesSubItems = [
     { name: t('nav.missContest'), path: "/miss-election" },
-    { name: t('nav.herosKwatt'), path: "/heros-kwatt" },
+    // Rubrique retirée pour le moment (demande du 2026-09-10).
+    // { name: t('nav.herosKwatt'), path: "/heros-kwatt" },
   ];
 
   const scrollToSection = (href: string) => {

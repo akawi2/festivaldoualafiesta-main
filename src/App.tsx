@@ -9,7 +9,8 @@ import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Mediatheque from "./pages/Mediatheque";
 import MissElection from "./pages/MissElection";
-import HerosKwatt from "./pages/HerosKwatt";
+// Rubrique retirée pour le moment (demande du 2026-09-10).
+// import HerosKwatt from "./pages/HerosKwatt";
 import Programme from "./pages/Programme";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -27,7 +28,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/mediatheque" element={<Mediatheque />} />
             <Route path="/miss-election" element={<MissElection />} />
-            <Route path="/heros-kwatt" element={<HerosKwatt />} />
+            {/* Rubrique retirée pour le moment (demande du 2026-09-10). */}
+            {/* <Route path="/heros-kwatt" element={<HerosKwatt />} /> */}
             <Route path="/programme" element={<Programme />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<Admin />} />
