@@ -7,11 +7,18 @@ interface CandidateImageCarouselProps {
   alt: string;
   className?: string;
   showControls?: boolean;
+  objectFit?: "cover" | "contain";
 }
 
 const AUTOPLAY_DELAY = 3000;
 
-export const CandidateImageCarousel = ({ images, alt, className, showControls = false }: CandidateImageCarouselProps) => {
+export const CandidateImageCarousel = ({
+  images,
+  alt,
+  className,
+  showControls = false,
+  objectFit = "cover",
+}: CandidateImageCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -51,7 +58,8 @@ export const CandidateImageCarousel = ({ images, alt, className, showControls = 
           src={image}
           alt={`${alt} - Photo ${index + 1}`}
           className={cn(
-            "absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700",
+            "absolute inset-0 w-full h-full transition-opacity duration-700",
+            objectFit === "contain" ? "object-contain" : "object-cover object-top",
             index === currentIndex ? "opacity-100" : "opacity-0"
           )}
         />

@@ -1107,12 +1107,13 @@ const MissElection = () => {
 
               return (
                 <div className="flex flex-col">
-                  <div className="relative h-64 sm:h-80 overflow-hidden bg-muted shrink-0">
+                  <div className="relative h-80 sm:h-[28rem] md:h-[32rem] overflow-hidden bg-navy shrink-0">
                     <CandidateImageCarousel
                       images={displayImages}
                       alt={selectedCandidate.name}
                       className="w-full h-full"
                       showControls
+                      objectFit="contain"
                     />
                     <div className="absolute top-3 right-3 flex items-center gap-1 z-10">
                       {getRankIcon(rank)}
