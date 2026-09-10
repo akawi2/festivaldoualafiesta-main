@@ -74,7 +74,9 @@ ON public.ticket_types
 FOR ALL 
 USING (auth.role() = 'authenticated');
 
--- Add trigger for ticket_types
+-- Add trigger for ticket_types (already created by 20250825144949, guard
+-- against replaying this migration on a fresh project)
+DROP TRIGGER IF EXISTS update_ticket_types_updated_at ON public.ticket_types;
 CREATE TRIGGER update_ticket_types_updated_at
 BEFORE UPDATE ON public.ticket_types
 FOR EACH ROW
