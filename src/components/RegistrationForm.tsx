@@ -405,6 +405,10 @@ export function RegistrationForm() {
     <>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-[#5D4037] mb-2">{t("formTitle")}</h2>
+          <p className="text-[#8D6E63]">{t("formSubtitle")}</p>
+        </div>
         {step === 1 && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
