@@ -283,7 +283,7 @@ const Navigation = () => {
                   backgroundRepeat: 'repeat'
                 }}
               >
-                {t('nav.reserve')}
+                {t('nav.mobileReserve')}
               </Button>
 
               <div

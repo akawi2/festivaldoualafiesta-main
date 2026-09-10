@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Play, Pause, Camera, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
-import { useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Camera, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { SEO } from "@/components/SEO";
@@ -22,34 +20,35 @@ interface GalleryImage {
   category: string;
 }
 
+interface MediathequeNavState {
+  openImageId?: string;
+  category?: string;
+}
+
 const Mediatheque = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navState = (location.state as MediathequeNavState) || null;
+
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>(t("mediatheque.all"));
-  const [isAutoplay, setIsAutoplay] = useState(true);
-  const autoplay = React.useRef(
-    Autoplay({
-      delay: 3500,
-      stopOnInteraction: false,
-      stopOnMouseEnter: true,
-    }),
-  );
-
-  const toggleAutoplay = () => {
-    if (isAutoplay) {
-      autoplay.current?.stop();
-    } else {
-      autoplay.current?.play();
-    }
-    setIsAutoplay(!isAutoplay);
-  };
+  const [selectedCategory, setSelectedCategory] = useState<string>(navState?.category || t("mediatheque.all"));
 
   useEffect(() => {
     fetchGalleryImages();
   }, []);
+
+  // Ouvre directement le détail de l'image ciblée depuis la page d'accueil.
+  useEffect(() => {
+    if (loading || !navState?.openImageId) return;
+    const index = filteredImages.findIndex((img) => img.id === navState.openImageId);
+    if (index !== -1) setViewerIndex(index);
+    // Nettoie le state pour ne pas rouvrir le viewer si l'utilisateur revient sur cette page.
+    navigate(location.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   const fetchGalleryImages = async () => {
     try {
@@ -79,6 +78,12 @@ const Mediatheque = () => {
     selectedCategory === t("mediatheque.all")
       ? galleryImages
       : galleryImages.filter((img) => img.category === selectedCategory);
+
+  const descriptionFor = (image: GalleryImage) =>
+    (i18n.language === "en" ? image.description_en : image.description_fr) ||
+    image.description_fr ||
+    image.description_en ||
+    "";
 
   const openViewer = (index: number) => setViewerIndex(index);
   const closeViewer = () => setViewerIndex(null);
@@ -127,7 +132,7 @@ const Mediatheque = () => {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Category Filter */}
-        <div className="flex flex-wrap gap-3 mb-8">
+        <div className="flex flex-wrap gap-3 mb-10">
           {categories.map((category) => (
             <Button
               key={category}
@@ -140,143 +145,132 @@ const Mediatheque = () => {
           ))}
         </div>
 
-        {/* Gallery Slider */}
+        {/* Gallery Grid */}
         {filteredImages.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">{t("mediatheque.noImages")}</p>
           </div>
         ) : (
-          <div className="relative">
-            <div className="flex justify-center items-center gap-2 mb-6">
-              <Button variant="outline" size="sm" onClick={toggleAutoplay} className="flex items-center gap-2">
-                {isAutoplay ? (
-                  <>
-                    <Pause className="h-4 w-4" />
-                    Pause
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4" />
-                    Play
-                  </>
-                )}
-              </Button>
-              <Badge variant="secondary" className="text-sm">
-                {filteredImages.length} élément{filteredImages.length > 1 ? "s" : ""}
-              </Badge>
-            </div>
-
-            <Carousel
-              key={selectedCategory}
-              plugins={[autoplay.current]}
-              className="w-full px-4 sm:px-8 lg:px-12"
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-            >
-              <CarouselContent className="-ml-4">
-                {filteredImages.map((image, index) => (
-                  <CarouselItem key={image.id} className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                    <Card
-                      className="group overflow-hidden shadow-elegant hover:shadow-coral transition-all duration-500 hover:-translate-y-2 cursor-pointer"
-                      onClick={() => openViewer(index)}
-                    >
-                      <div className="relative aspect-square overflow-hidden bg-muted">
-                        {image.category === "Vidéo" ? (
-                          <>
-                            <video
-                              src={image.image_url}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                              preload="metadata"
-                              muted
-                            />
-                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                              <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:bg-white group-hover:scale-110 transition-all duration-300">
-                                <div className="w-0 h-0 border-l-[20px] border-l-primary border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-1" />
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <img
-                              src={image.image_url}
-                              alt={image.title}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                              loading="lazy"
-                            />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3">
-                                <Camera className="h-6 w-6 text-primary" />
-                              </div>
-                            </div>
-                          </>
-                        )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredImages.map((image, index) => (
+              <Card
+                key={image.id}
+                className="group overflow-hidden shadow-elegant hover:shadow-coral transition-all duration-500 hover:-translate-y-2 cursor-pointer"
+                onClick={() => openViewer(index)}
+              >
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                  {image.category === "Vidéo" ? (
+                    <>
+                      <video
+                        src={image.image_url}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        preload="metadata"
+                        muted
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:bg-white group-hover:scale-110 transition-all duration-300">
+                          <div className="w-0 h-0 border-l-[20px] border-l-primary border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-1" />
+                        </div>
                       </div>
-                    </Card>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="hidden sm:flex" />
-              <CarouselNext className="hidden sm:flex" />
-            </Carousel>
+                    </>
+                  ) : (
+                    <>
+                      <img
+                        src={image.image_url}
+                        alt={image.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3">
+                          <Camera className="h-6 w-6 text-primary" />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <Badge className="absolute top-3 left-3 bg-gradient-coral text-white border-0">
+                    {image.category}
+                  </Badge>
+                </div>
+                <div className="p-5">
+                  <h3 className="font-semibold text-lg text-foreground mb-2 line-clamp-1">{image.title}</h3>
+                  {descriptionFor(image) && (
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{descriptionFor(image)}</p>
+                  )}
+                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-gold group-hover:gap-2 transition-all">
+                    {t("mediatheque.readMore")}
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
+              </Card>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Visionneuse : défile toutes les photos de la catégorie affichée */}
+      {/* Visionneuse détaillée : image/vidéo + titre + description, navigation entre les éléments filtrés */}
       <Dialog open={viewerIndex !== null} onOpenChange={(open) => !open && closeViewer()}>
-        <DialogContent className="max-w-5xl p-0 overflow-hidden bg-black border-0">
+        <DialogContent className="max-w-5xl p-0 overflow-hidden bg-background border-0">
           {viewerImage && (
-            <div className="relative flex items-center justify-center bg-black" style={{ height: "85vh" }}>
-              {viewerImage.category === "Vidéo" ? (
-                <video
-                  key={viewerImage.id}
-                  src={viewerImage.image_url}
-                  className="max-w-full max-h-full object-contain"
-                  controls
-                  autoPlay
-                />
-              ) : (
-                <img
-                  src={viewerImage.image_url}
-                  alt={viewerImage.title}
-                  className="max-w-full max-h-full object-contain"
-                />
-              )}
+            <div className="flex flex-col">
+              <div className="relative flex items-center justify-center bg-black" style={{ height: "60vh" }}>
+                {viewerImage.category === "Vidéo" ? (
+                  <video
+                    key={viewerImage.id}
+                    src={viewerImage.image_url}
+                    className="max-w-full max-h-full object-contain"
+                    controls
+                    autoPlay
+                  />
+                ) : (
+                  <img
+                    src={viewerImage.image_url}
+                    alt={viewerImage.title}
+                    className="max-w-full max-h-full object-contain"
+                  />
+                )}
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={closeViewer}
-                className="absolute top-3 right-3 bg-white/10 hover:bg-white/20 text-white rounded-full"
-              >
-                <X className="h-5 w-5" />
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={closeViewer}
+                  className="absolute top-3 right-3 bg-white/10 hover:bg-white/20 text-white rounded-full"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
 
-              {filteredImages.length > 1 && (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={showPrev}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full h-10 w-10"
-                  >
-                    <ChevronLeft className="h-6 w-6" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={showNext}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full h-10 w-10"
-                  >
-                    <ChevronRight className="h-6 w-6" />
-                  </Button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/10 text-white text-sm px-3 py-1 rounded-full">
-                    {(viewerIndex ?? 0) + 1} / {filteredImages.length}
-                  </div>
-                </>
-              )}
+                {filteredImages.length > 1 && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={showPrev}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full h-10 w-10"
+                    >
+                      <ChevronLeft className="h-6 w-6" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={showNext}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full h-10 w-10"
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </Button>
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/10 text-white text-sm px-3 py-1 rounded-full">
+                      {(viewerIndex ?? 0) + 1} / {filteredImages.length}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="p-6">
+                <Badge className="bg-gradient-coral text-white border-0 mb-3">{viewerImage.category}</Badge>
+                <h2 className="text-2xl font-bold text-foreground mb-2">{viewerImage.title}</h2>
+                {descriptionFor(viewerImage) && (
+                  <p className="text-muted-foreground leading-relaxed">{descriptionFor(viewerImage)}</p>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>
