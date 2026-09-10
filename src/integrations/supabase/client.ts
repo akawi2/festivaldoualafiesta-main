@@ -3,10 +3,10 @@ import type { Database } from './types';
 
 // Défaut = le Supabase cloud de production. Ne JAMAIS changer ces valeurs en dur
 // pour tester en local — c'est exactement ce qui a failli casser la prod.
-// Pour développer contre le self-hosted local à la place, créer un fichier
+// Pour développer contre un autre projet à la place, créer un fichier
 // `.env.local` (jamais commité, voir .gitignore) avec :
-//   VITE_SUPABASE_URL=http://127.0.0.1:8000
-//   VITE_SUPABASE_PUBLISHABLE_KEY=<ANON_KEY de supabase-selfhost/.env>
+//   VITE_SUPABASE_URL=...
+//   VITE_SUPABASE_PUBLISHABLE_KEY=...
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://mpjnfyppuaurbffhtocw.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
