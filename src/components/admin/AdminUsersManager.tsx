@@ -21,18 +21,26 @@ interface AdminUser {
   updated_at: string;
 }
 
-export function AdminUsersManager() {
+interface AdminUsersManagerProps {
+  currentUserEmail: string;
+}
+
+export function AdminUsersManager({ currentUserEmail }: AdminUsersManagerProps) {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showActingPassword, setShowActingPassword] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null);
+  const [deletePassword, setDeletePassword] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     name: "",
     password: "",
     role: "admin",
     is_active: true,
+    actingPassword: "",
   });
 
   useEffect(() => {
@@ -58,6 +66,8 @@ export function AdminUsersManager() {
     try {
       if (editingUser) {
         const { error } = await supabase.rpc("admin_update_user", {
+          p_acting_email: currentUserEmail,
+          p_acting_password: formData.actingPassword,
           p_id: editingUser.id,
           p_email: formData.email,
           p_name: formData.name,
@@ -69,6 +79,8 @@ export function AdminUsersManager() {
 
         if (formData.password) {
           const { error: passwordError } = await supabase.rpc("admin_update_user_password", {
+            p_acting_email: currentUserEmail,
+            p_acting_password: formData.actingPassword,
             p_id: editingUser.id,
             p_new_password: formData.password,
           });
@@ -78,6 +90,8 @@ export function AdminUsersManager() {
         toast.success("Utilisateur admin mis à jour avec succès");
       } else {
         const { error } = await supabase.rpc("admin_create_user", {
+          p_acting_email: currentUserEmail,
+          p_acting_password: formData.actingPassword,
           p_email: formData.email,
           p_name: formData.name,
           p_password: formData.password,
@@ -106,18 +120,26 @@ export function AdminUsersManager() {
       password: "",
       role: user.role,
       is_active: user.is_active,
+      actingPassword: "",
     });
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur admin ?")) return;
+  const handleDeleteConfirm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!deleteTarget) return;
 
     try {
-      const { error } = await supabase.rpc("admin_delete_user", { p_id: id });
+      const { error } = await supabase.rpc("admin_delete_user", {
+        p_acting_email: currentUserEmail,
+        p_acting_password: deletePassword,
+        p_id: deleteTarget.id,
+      });
 
       if (error) throw error;
       toast.success("Utilisateur admin supprimé avec succès");
+      setDeleteTarget(null);
+      setDeletePassword("");
       fetchAdminUsers();
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
@@ -132,6 +154,7 @@ export function AdminUsersManager() {
       password: "",
       role: "admin",
       is_active: true,
+      actingPassword: "",
     });
     setEditingUser(null);
   };
@@ -231,6 +254,28 @@ export function AdminUsersManager() {
                 />
                 <Label htmlFor="is_active" className="text-gray-700">Compte actif</Label>
               </div>
+              <div className="pt-2 border-t border-admin-border">
+                <Label htmlFor="actingPassword" className="text-gray-700">
+                  Votre mot de passe (confirmation requise pour cette action)
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="actingPassword"
+                    type={showActingPassword ? "text" : "password"}
+                    value={formData.actingPassword}
+                    onChange={(e) => setFormData({ ...formData, actingPassword: e.target.value })}
+                    className="bg-white border-admin-border pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowActingPassword(!showActingPassword)}
+                    className="absolute right-3 top-3 text-gray-500 hover:text-admin-accent"
+                  >
+                    {showActingPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
               <div className="flex justify-end space-x-2">
                 <Button
                   type="button"
@@ -307,7 +352,10 @@ export function AdminUsersManager() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() => {
+                            setDeleteTarget(user);
+                            setDeletePassword("");
+                          }}
                           className="border-red-200 text-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -321,6 +369,44 @@ export function AdminUsersManager() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="bg-white border-admin-border">
+          <DialogHeader>
+            <DialogTitle className="text-admin-accent">Supprimer {deleteTarget?.name} ?</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Cette action est irréversible. Confirmez avec votre mot de passe administrateur.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleDeleteConfirm} className="space-y-4">
+            <div>
+              <Label htmlFor="deletePassword" className="text-gray-700">Votre mot de passe</Label>
+              <Input
+                id="deletePassword"
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                className="bg-white border-admin-border"
+                required
+                autoFocus
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDeleteTarget(null)}
+                className="border-admin-border hover:bg-admin-card-secondary"
+              >
+                Annuler
+              </Button>
+              <Button type="submit" variant="destructive">
+                Supprimer
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

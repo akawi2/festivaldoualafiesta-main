@@ -590,7 +590,7 @@ export function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
           {activeTab === "gallery" && <GalleryManager />}
           {activeTab === "categories" && <CategoriesManager />}
           {activeTab === "settings" && <SiteSettingsManager />}
-          {activeTab === "users" && <AdminUsersManager />}
+          {activeTab === "users" && <AdminUsersManager currentUserEmail={user.email} />}
           {activeTab === "newsletter" && <NewsletterManager />}
           {activeTab === "partners" && <PartnersManager />}
         </div>
