@@ -109,7 +109,7 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link to="/admin" className="flex items-center space-x-3 group">
+            <Link to="/" className="flex items-center space-x-3 group">
               <img
                 src={logoFdf}
                 alt="Festival Douala Fiesta Logo"
