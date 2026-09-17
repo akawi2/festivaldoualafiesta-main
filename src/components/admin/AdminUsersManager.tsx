@@ -41,10 +41,7 @@ export function AdminUsersManager() {
 
   const fetchAdminUsers = async () => {
     try {
-      const { data, error } = await supabase
-        .from("admin_users")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.rpc("admin_list_users");
 
       if (error) throw error;
       setAdminUsers(data || []);
@@ -57,33 +54,36 @@ export function AdminUsersManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       if (editingUser) {
-        // Update existing user (without password change for now)
-        const { error } = await supabase
-          .from("admin_users")
-          .update({
-            email: formData.email,
-            name: formData.name,
-            role: formData.role,
-            is_active: formData.is_active,
-          })
-          .eq("id", editingUser.id);
+        const { error } = await supabase.rpc("admin_update_user", {
+          p_id: editingUser.id,
+          p_email: formData.email,
+          p_name: formData.name,
+          p_role: formData.role,
+          p_is_active: formData.is_active,
+        });
 
         if (error) throw error;
+
+        if (formData.password) {
+          const { error: passwordError } = await supabase.rpc("admin_update_user_password", {
+            p_id: editingUser.id,
+            p_new_password: formData.password,
+          });
+          if (passwordError) throw passwordError;
+        }
+
         toast.success("Utilisateur admin mis à jour avec succès");
       } else {
-        // Create new user - Note: In production, you'd want to hash the password
-        const { error } = await supabase
-          .from("admin_users")
-          .insert([{
-            email: formData.email,
-            name: formData.name,
-            password_hash: formData.password, // In production, hash this!
-            role: formData.role,
-            is_active: formData.is_active,
-          }]);
+        const { error } = await supabase.rpc("admin_create_user", {
+          p_email: formData.email,
+          p_name: formData.name,
+          p_password: formData.password,
+          p_role: formData.role,
+          p_is_active: formData.is_active,
+        });
 
         if (error) throw error;
         toast.success("Utilisateur admin créé avec succès");
@@ -93,7 +93,8 @@ export function AdminUsersManager() {
       resetForm();
       fetchAdminUsers();
     } catch (error) {
-      toast.error("Erreur lors de la sauvegarde");
+      const message = error instanceof Error ? error.message : "";
+      toast.error(message || "Erreur lors de la sauvegarde");
     }
   };
 
@@ -113,16 +114,14 @@ export function AdminUsersManager() {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur admin ?")) return;
 
     try {
-      const { error } = await supabase
-        .from("admin_users")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.rpc("admin_delete_user", { p_id: id });
 
       if (error) throw error;
       toast.success("Utilisateur admin supprimé avec succès");
       fetchAdminUsers();
     } catch (error) {
-      toast.error("Erreur lors de la suppression");
+      const message = error instanceof Error ? error.message : "";
+      toast.error(message || "Erreur lors de la suppression");
     }
   };
 
@@ -189,28 +188,29 @@ export function AdminUsersManager() {
                   required
                 />
               </div>
-              {!editingUser && (
-                <div>
-                  <Label htmlFor="password" className="text-gray-700">Mot de passe</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="bg-white border-admin-border pr-10"
-                      required={!editingUser}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-500 hover:text-admin-accent"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
+              <div>
+                <Label htmlFor="password" className="text-gray-700">
+                  {editingUser ? "Nouveau mot de passe (laisser vide pour ne pas changer)" : "Mot de passe"}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="bg-white border-admin-border pr-10"
+                    required={!editingUser}
+                    minLength={editingUser ? undefined : 6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3 text-gray-500 hover:text-admin-accent"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
-              )}
+              </div>
               <div>
                 <Label htmlFor="role" className="text-gray-700">Rôle</Label>
                 <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
