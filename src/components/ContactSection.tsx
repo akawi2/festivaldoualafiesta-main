@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { getVisitorIp, getVisitorFingerprint } from "@/utils/visitorIdentity";
 import { buildWhatsAppUrl } from "@/utils/whatsapp";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PartnerSubscriptionForm from "@/components/PartnerSubscriptionForm";
 
 const ContactSection = () => {
   const { t } = useTranslation();
@@ -31,6 +33,10 @@ const ContactSection = () => {
     standType: "",
     standName: "",
     standPhone: "",
+    representative: "",
+    position: "",
+    sector: "",
+    email: "",
     quantity: 1,
   });
 
@@ -44,22 +50,32 @@ const ContactSection = () => {
 
   const standTypes = [
     {
-      type: t("contact.standTypes.social"),
-      description: t("contact.standTypes.socialDescript"),
-      price: "150 000 FCFA",
-      priceValue: 150000,
+      type: "Emplacement mutuel",
+      label: t("contact.standTypes.shared"),
+      description: t("contact.standTypes.sharedDescript"),
+      price: "15 000 FCFA",
+      priceValue: 15000,
     },
     {
-      type: t("contact.standTypes.business"),
+      type: "Stand Social",
+      label: t("contact.standTypes.social"),
+      description: t("contact.standTypes.socialDescript"),
+      price: "100 000 FCFA",
+      priceValue: 100000,
+    },
+    {
+      type: "Stand Business",
+      label: t("contact.standTypes.business"),
       description: t("contact.standTypes.businessDescript"),
+      price: "250 000 FCFA",
+      priceValue: 250000,
+    },
+    {
+      type: "Stand Partenaire",
+      label: t("contact.standTypes.partner"),
+      description: t("contact.standTypes.patnerDescript"),
       price: "500 000 FCFA",
       priceValue: 500000,
-    },
-    {
-      type: t("contact.standTypes.partner"),
-      description: t("contact.standTypes.patnerDescript"),
-      price: "1 000 000 FCFA",
-      priceValue: 1000000,
     },
   ];
 
@@ -169,8 +185,6 @@ const ContactSection = () => {
     // 1. Calcul du prix total
     const totalPrice = getTotalPrice();
 
-    const priceStand = getSelectedStandPrice();
-
     // Vérification basique
     if (!standData.standType || totalPrice === 0) {
       toast({
@@ -189,10 +203,12 @@ const ContactSection = () => {
         p_stand_name: standData.standName,
         p_stand_phone: standData.standPhone,
         p_quantity: standData.quantity,
-        p_price_fcfa: priceStand,
-        p_total_price: totalPrice,
         p_ip: submitterIp,
         p_fingerprint: submitterFingerprint,
+        p_representative_name: standData.representative,
+        p_representative_position: standData.position || null,
+        p_activity_sector: standData.sector,
+        p_email: standData.email,
       });
 
       if (error) {
@@ -216,6 +232,7 @@ const ContactSection = () => {
           `Bonjour, je viens de réserver un stand pour le Festival Douala Fiesta.\n` +
             `Type de stand : ${standData.standType}\n` +
             `Nom/Entreprise : ${standData.standName}\n` +
+            `Représentant : ${standData.representative}\n` +
             `Téléphone : ${standData.standPhone}\n` +
             `Quantité : ${standData.quantity}\n` +
             `Montant total : ${totalPrice.toLocaleString("fr-FR")} FCFA`,
@@ -226,6 +243,10 @@ const ContactSection = () => {
         standType: "",
         standName: "",
         standPhone: "",
+        representative: "",
+        position: "",
+        sector: "",
+        email: "",
         quantity: 1,
       });
     } catch (error) {
@@ -501,6 +522,20 @@ const ContactSection = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
+                <Tabs defaultValue="exhibition" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 h-auto gap-1 mb-6">
+                    <TabsTrigger value="exhibition" className="whitespace-normal text-xs sm:text-sm py-2 h-auto leading-tight">
+                      {t("contact.spaces.tabExhibition")}
+                    </TabsTrigger>
+                    <TabsTrigger value="sponsoring" className="whitespace-normal text-xs sm:text-sm py-2 h-auto leading-tight">
+                      {t("contact.spaces.tabSponsoring")}
+                    </TabsTrigger>
+                    <TabsTrigger value="visibility" className="whitespace-normal text-xs sm:text-sm py-2 h-auto leading-tight">
+                      {t("contact.spaces.tabVisibility")}
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="exhibition">
                 <form onSubmit={handleStandSubmit} className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-3">
@@ -527,7 +562,7 @@ const ContactSection = () => {
                           >
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
-                                <h4 className="font-semibold text-foreground">{stand.type}</h4>
+                                <h4 className="font-semibold text-foreground">{stand.label}</h4>
                                 <p className="text-sm text-muted-foreground mt-1">{stand.description}</p>
                                 <div className="mt-2">
                                   <span className="text-lg font-bold bg-gradient-gold bg-clip-text text-transparent">
@@ -585,6 +620,34 @@ const ContactSection = () => {
                   </div>
 
                   <div>
+                    <label htmlFor="representative" className="block text-sm font-medium text-foreground mb-2">
+                      {t("contact.standTypes.representative")} *
+                    </label>
+                    <Input
+                      id="representative"
+                      name="representative"
+                      value={standData.representative}
+                      onChange={handleStandInputChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="position" className="block text-sm font-medium text-foreground mb-2">
+                        {t("contact.standTypes.position")}
+                      </label>
+                      <Input id="position" name="position" value={standData.position} onChange={handleStandInputChange} />
+                    </div>
+                    <div>
+                      <label htmlFor="sector" className="block text-sm font-medium text-foreground mb-2">
+                        {t("contact.standTypes.sector")} *
+                      </label>
+                      <Input id="sector" name="sector" value={standData.sector} onChange={handleStandInputChange} required />
+                    </div>
+                  </div>
+
+                  <div>
                     <label htmlFor="standPhone" className="block text-sm font-medium text-foreground mb-2">
                       {t("contact.standTypes.expoPhone")} *
                     </label>
@@ -599,13 +662,47 @@ const ContactSection = () => {
                     />
                   </div>
 
+                  <div>
+                    <label htmlFor="standEmail" className="block text-sm font-medium text-foreground mb-2">
+                      {t("contact.standTypes.email")} *
+                    </label>
+                    <Input
+                      id="standEmail"
+                      name="email"
+                      type="email"
+                      value={standData.email}
+                      onChange={handleStandInputChange}
+                      required
+                      autoComplete="email"
+                    />
+                  </div>
+
+                  <div className="rounded-lg bg-muted/50 p-4">
+                    <p className="text-sm font-semibold text-foreground mb-2">{t("contact.standTypes.benefitsTitle")}</p>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      {(t("contact.standTypes.benefits", { returnObjects: true }) as string[]).map((b) => (
+                        <li key={b}>• {b}</li>
+                      ))}
+                    </ul>
+                  </div>
+
                   <Button
                     type="submit"
                     className="w-full bg-gradient-gold text-navy font-semibold text-lg py-3 hover:scale-105 transition-transform shadow-gold"
                   >
                     {t("contact.standTypes.reservation")}
                   </Button>
+                  <p className="text-xs text-muted-foreground">{t("contact.standTypes.invoiceNote")}</p>
                 </form>
+                  </TabsContent>
+
+                  <TabsContent value="sponsoring">
+                    <PartnerSubscriptionForm kind="sponsoring" />
+                  </TabsContent>
+                  <TabsContent value="visibility">
+                    <PartnerSubscriptionForm kind="visibility" />
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
