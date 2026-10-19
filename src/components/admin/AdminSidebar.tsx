@@ -19,6 +19,8 @@ import {
   Store,
   FolderOpen,
   Mail,
+  Handshake,
+  Utensils,
 } from "lucide-react";
 
 interface AdminUser {
@@ -43,6 +45,8 @@ const menuItems = [
   { id: "heroes", label: "Héros du Kwatt", icon: Trophy },
   { id: "talents", label: "Talents", icon: Mic },
   { id: "stands", label: "Stands", icon: Store },
+  { id: "partnerships", label: "Sponsoring & visibilité", icon: Handshake },
+  { id: "activities", label: "Inscriptions activités", icon: Utensils },
   { id: "partners", label: "Partenaires", icon: ShoppingCart },
   { id: "program", label: "Programme", icon: Calendar },
   { id: "gallery", label: "Galerie", icon: Image },

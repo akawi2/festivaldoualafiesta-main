@@ -18,6 +18,10 @@ interface StandReservation {
   status: string;
   payment_status: string;
   created_at: string;
+  representative_name: string | null;
+  representative_position: string | null;
+  activity_sector: string | null;
+  email: string | null;
 }
 
 export function StandsManager() {
@@ -98,9 +102,13 @@ export function StandsManager() {
 
   const handleExport = () => {
     const csvContent = [
-      ['Nom/Entreprise', 'Téléphone', 'Type de Stand', 'Prix Unitaire', 'Quantité', 'Prix Total', 'Statut', 'Paiement', 'Date de Réservation'].join(','),
+      ['Nom/Entreprise', 'Représentant', 'Fonction', 'Secteur', 'E-mail', 'Téléphone', 'Type de Stand', 'Prix Unitaire', 'Quantité', 'Prix Total', 'Statut', 'Paiement', 'Date de Réservation'].join(','),
       ...stands.map(stand => [
         stand.stand_name,
+        stand.representative_name || '',
+        stand.representative_position || '',
+        stand.activity_sector || '',
+        stand.email || '',
         stand.stand_phone,
         stand.stand_type,
         stand.price_fcfa,
@@ -253,6 +261,7 @@ export function StandsManager() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-navy">Nom/Entreprise</TableHead>
+                    <TableHead className="text-navy">Représentant</TableHead>
                     <TableHead className="text-navy">Téléphone</TableHead>
                     <TableHead className="text-navy">Type de Stand</TableHead>
                     <TableHead className="text-navy">Prix Unitaire</TableHead>
@@ -268,6 +277,12 @@ export function StandsManager() {
                   {stands.map((stand) => (
                     <TableRow key={stand.id}>
                       <TableCell className="font-medium text-gray-dark">{stand.stand_name}</TableCell>
+                      <TableCell className="text-gray-dark text-sm">
+                        {stand.representative_name}
+                        {stand.representative_position && <span className="text-gray-medium"> ({stand.representative_position})</span>}
+                        {stand.activity_sector && <div className="text-xs text-gray-medium">{stand.activity_sector}</div>}
+                        {stand.email && <div className="text-xs text-gray-medium">{stand.email}</div>}
+                      </TableCell>
                       <TableCell className="text-gray-dark">{stand.stand_phone}</TableCell>
                       <TableCell className="text-gray-dark">
                         <Badge variant="outline">{stand.stand_type}</Badge>

@@ -20,6 +20,8 @@ import { GalleryManager } from "./GalleryManager";
 import { HerosKwattManager } from "./HerosKwattManager";
 import { TalentsManager } from "./TalentsManager";
 import { StandsManager } from "./StandsManager";
+import { PartnerSubscriptionsManager } from "./PartnerSubscriptionsManager";
+import { ActivityRegistrationsManager } from "./ActivityRegistrationsManager";
 import { MissGalleryManager } from "./MissGalleryManager";
 import { PartnersManager } from "./PartnersManager";
 import { CategoriesManager } from "./CategoriesManager";
@@ -272,6 +274,8 @@ export function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
                 {activeTab === "heroes" && "Gestion des Héros du Kwatt"}
                 {activeTab === "talents" && "Gestion des Talents"}
                 {activeTab === "stands" && "Gestion des Stands"}
+                {activeTab === "partnerships" && "Sponsoring et visibilité"}
+                {activeTab === "activities" && "Inscriptions aux activités"}
                 {activeTab === "program" && "Gestion du programme"}
                 {activeTab === "gallery" && "Gestion de la galerie"}
                 {activeTab === "categories" && "Gestion des catégories"}
@@ -586,6 +590,8 @@ export function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
           {activeTab === "heroes" && <HerosKwattManager />}
           {activeTab === "talents" && <TalentsManager />}
           {activeTab === "stands" && <StandsManager />}
+          {activeTab === "partnerships" && <PartnerSubscriptionsManager />}
+          {activeTab === "activities" && <ActivityRegistrationsManager />}
           {activeTab === "program" && <ProgramManager />}
           {activeTab === "gallery" && <GalleryManager />}
           {activeTab === "categories" && <CategoriesManager />}
