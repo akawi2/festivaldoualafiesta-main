@@ -10,10 +10,86 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
+    PostgrestVersion: "14.17"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
+      activity_registrations: {
+        Row: {
+          age: number
+          commercial_name: string
+          created_at: string
+          discipline: string
+          district: string
+          experience_years: number
+          full_name: string
+          id: string
+          phone: string
+          status: string
+          submitter_fingerprint: string | null
+          submitter_ip: string | null
+          updated_at: string
+          weight_category: string | null
+        }
+        Insert: {
+          age: number
+          commercial_name: string
+          created_at?: string
+          discipline: string
+          district: string
+          experience_years: number
+          full_name: string
+          id?: string
+          phone: string
+          status?: string
+          submitter_fingerprint?: string | null
+          submitter_ip?: string | null
+          updated_at?: string
+          weight_category?: string | null
+        }
+        Update: {
+          age?: number
+          commercial_name?: string
+          created_at?: string
+          discipline?: string
+          district?: string
+          experience_years?: number
+          full_name?: string
+          id?: string
+          phone?: string
+          status?: string
+          submitter_fingerprint?: string | null
+          submitter_ip?: string | null
+          updated_at?: string
+          weight_category?: string | null
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string
@@ -68,6 +144,8 @@ export type Database = {
       gallery_categories: {
         Row: {
           created_at: string
+          description_en: string | null
+          description_fr: string | null
           display_order: number
           id: string
           is_active: boolean
@@ -78,6 +156,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description_en?: string | null
+          description_fr?: string | null
           display_order?: number
           id?: string
           is_active?: boolean
@@ -88,6 +168,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description_en?: string | null
+          description_fr?: string | null
           display_order?: number
           id?: string
           is_active?: boolean
@@ -225,6 +307,7 @@ export type Database = {
           age: number | null
           city: string | null
           created_at: string
+          description: string | null
           description_en: string | null
           description_fr: string | null
           id: string
@@ -238,6 +321,7 @@ export type Database = {
           age?: number | null
           city?: string | null
           created_at?: string
+          description?: string | null
           description_en?: string | null
           description_fr?: string | null
           id?: string
@@ -251,6 +335,7 @@ export type Database = {
           age?: number | null
           city?: string | null
           created_at?: string
+          description?: string | null
           description_en?: string | null
           description_fr?: string | null
           id?: string
@@ -307,54 +392,75 @@ export type Database = {
         Row: {
           age: number | null
           auth_url: string | null
-          borough: string
+          borough: string | null
           card_url: string | null
           city: string | null
           created_at: string
           "date de naissance": string | null
+          description: string | null
           district: string | null
-          first_name: string
+          email: string | null
+          experience: string | null
+          first_name: string | null
+          hobbies: string | null
           id: string
           image_url: string | null
           name: string
           phone: string | null
           profession: string | null
+          status: string
+          submitter_fingerprint: string | null
+          submitter_ip: string | null
           taille: string | null
           updated_at: string
         }
         Insert: {
           age?: number | null
           auth_url?: string | null
-          borough: string
+          borough?: string | null
           card_url?: string | null
           city?: string | null
           created_at?: string
           "date de naissance"?: string | null
+          description?: string | null
           district?: string | null
-          first_name: string
+          email?: string | null
+          experience?: string | null
+          first_name?: string | null
+          hobbies?: string | null
           id?: string
           image_url?: string | null
           name: string
           phone?: string | null
           profession?: string | null
+          status?: string
+          submitter_fingerprint?: string | null
+          submitter_ip?: string | null
           taille?: string | null
           updated_at?: string
         }
         Update: {
           age?: number | null
           auth_url?: string | null
-          borough?: string
+          borough?: string | null
           card_url?: string | null
           city?: string | null
           created_at?: string
           "date de naissance"?: string | null
+          description?: string | null
           district?: string | null
-          first_name?: string
+          email?: string | null
+          experience?: string | null
+          first_name?: string | null
+          hobbies?: string | null
           id?: string
           image_url?: string | null
           name?: string
           phone?: string | null
           profession?: string | null
+          status?: string
+          submitter_fingerprint?: string | null
+          submitter_ip?: string | null
           taille?: string | null
           updated_at?: string
         }
@@ -403,6 +509,96 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      partner_catalog: {
+        Row: {
+          category: string | null
+          display_order: number
+          key: string
+          kind: string
+          label_en: string
+          label_fr: string
+          price_fcfa: number | null
+        }
+        Insert: {
+          category?: string | null
+          display_order?: number
+          key: string
+          kind: string
+          label_en: string
+          label_fr: string
+          price_fcfa?: number | null
+        }
+        Update: {
+          category?: string | null
+          display_order?: number
+          key?: string
+          kind?: string
+          label_en?: string
+          label_fr?: string
+          price_fcfa?: number | null
+        }
+        Relationships: []
+      }
+      partner_subscriptions: {
+        Row: {
+          activity_sector: string | null
+          contribution_details: string | null
+          contribution_type: string | null
+          created_at: string
+          email: string
+          id: string
+          items: Json
+          kind: string
+          organization_name: string
+          phone: string
+          representative_name: string
+          representative_position: string | null
+          status: string
+          submitter_fingerprint: string | null
+          submitter_ip: string | null
+          total_price: number
+          updated_at: string
+        }
+        Insert: {
+          activity_sector?: string | null
+          contribution_details?: string | null
+          contribution_type?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          items?: Json
+          kind: string
+          organization_name: string
+          phone: string
+          representative_name: string
+          representative_position?: string | null
+          status?: string
+          submitter_fingerprint?: string | null
+          submitter_ip?: string | null
+          total_price?: number
+          updated_at?: string
+        }
+        Update: {
+          activity_sector?: string | null
+          contribution_details?: string | null
+          contribution_type?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          items?: Json
+          kind?: string
+          organization_name?: string
+          phone?: string
+          representative_name?: string
+          representative_position?: string | null
+          status?: string
+          submitter_fingerprint?: string | null
+          submitter_ip?: string | null
+          total_price?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       partners: {
         Row: {
@@ -538,7 +734,7 @@ export type Database = {
           key: string
           updated_at: string
           updated_by: string | null
-          value: Json
+          value: string
         }
         Insert: {
           category?: string | null
@@ -547,7 +743,7 @@ export type Database = {
           key: string
           updated_at?: string
           updated_by?: string | null
-          value: Json
+          value: string
         }
         Update: {
           category?: string | null
@@ -556,7 +752,7 @@ export type Database = {
           key?: string
           updated_at?: string
           updated_by?: string | null
-          value?: Json
+          value?: string
         }
         Relationships: [
           {
@@ -606,41 +802,62 @@ export type Database = {
       }
       stand_reservations: {
         Row: {
+          activity_sector: string | null
           created_at: string
+          email: string | null
           id: string
           payment_status: string
           price_fcfa: number | null
+          price_total: number | null
           quantity: number
+          representative_name: string | null
+          representative_position: string | null
           stand_name: string
           stand_phone: string
           stand_type: string
           status: string
+          submitter_fingerprint: string | null
+          submitter_ip: string | null
           total_price: number | null
           updated_at: string
         }
         Insert: {
+          activity_sector?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           payment_status?: string
           price_fcfa?: number | null
+          price_total?: number | null
           quantity?: number
+          representative_name?: string | null
+          representative_position?: string | null
           stand_name: string
           stand_phone: string
           stand_type: string
           status?: string
+          submitter_fingerprint?: string | null
+          submitter_ip?: string | null
           total_price?: number | null
           updated_at?: string
         }
         Update: {
+          activity_sector?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           payment_status?: string
           price_fcfa?: number | null
+          price_total?: number | null
           quantity?: number
+          representative_name?: string | null
+          representative_position?: string | null
           stand_name?: string
           stand_phone?: string
           stand_type?: string
           status?: string
+          submitter_fingerprint?: string | null
+          submitter_ip?: string | null
           total_price?: number | null
           updated_at?: string
         }
@@ -723,7 +940,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_create_user: {
+        Args: {
+          p_acting_email: string
+          p_acting_password: string
+          p_email: string
+          p_is_active?: boolean
+          p_name: string
+          p_password: string
+          p_role?: string
+        }
+        Returns: string
+      }
       admin_delete_partner: { Args: { p_id: string }; Returns: boolean }
+      admin_delete_user: {
+        Args: {
+          p_acting_email: string
+          p_acting_password: string
+          p_id: string
+        }
+        Returns: undefined
+      }
       admin_get_gallery_images: {
         Args: never
         Returns: {
@@ -759,6 +996,71 @@ export type Database = {
           website_url: string
         }[]
       }
+      admin_list_activity_registrations: {
+        Args: never
+        Returns: {
+          age: number
+          commercial_name: string
+          created_at: string
+          discipline: string
+          district: string
+          experience_years: number
+          full_name: string
+          id: string
+          phone: string
+          status: string
+          submitter_fingerprint: string | null
+          submitter_ip: string | null
+          updated_at: string
+          weight_category: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "activity_registrations"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_list_partner_subscriptions: {
+        Args: never
+        Returns: {
+          activity_sector: string | null
+          contribution_details: string | null
+          contribution_type: string | null
+          created_at: string
+          email: string
+          id: string
+          items: Json
+          kind: string
+          organization_name: string
+          phone: string
+          representative_name: string
+          representative_position: string | null
+          status: string
+          submitter_fingerprint: string | null
+          submitter_ip: string | null
+          total_price: number
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "partner_subscriptions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_list_users: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          name: string
+          role: string
+          updated_at: string
+        }[]
+      }
       admin_login: {
         Args: { p_email: string; p_password: string }
         Returns: {
@@ -773,6 +1075,14 @@ export type Database = {
       admin_toggle_partner_active: {
         Args: { p_id: string; p_is_active: boolean }
         Returns: boolean
+      }
+      admin_update_activity_registration_status: {
+        Args: { p_id: string; p_status: string }
+        Returns: undefined
+      }
+      admin_update_partner_subscription_status: {
+        Args: { p_id: string; p_status: string }
+        Returns: undefined
       }
       admin_update_program_event: {
         Args: {
@@ -792,8 +1102,37 @@ export type Database = {
         }
         Returns: string
       }
+      admin_update_stand_payment_status: {
+        Args: { p_id: string; p_payment_status: string }
+        Returns: undefined
+      }
+      admin_update_stand_status: {
+        Args: { p_id: string; p_status: string }
+        Returns: undefined
+      }
       admin_update_talent_status: {
         Args: { p_id: string; p_status: string }
+        Returns: undefined
+      }
+      admin_update_user: {
+        Args: {
+          p_acting_email: string
+          p_acting_password: string
+          p_email: string
+          p_id: string
+          p_is_active: boolean
+          p_name: string
+          p_role: string
+        }
+        Returns: undefined
+      }
+      admin_update_user_password: {
+        Args: {
+          p_acting_email: string
+          p_acting_password: string
+          p_id: string
+          p_new_password: string
+        }
         Returns: undefined
       }
       admin_upsert_gallery_image: {
@@ -834,9 +1173,9 @@ export type Database = {
         }
         Returns: string
       }
-      create_admin_user: {
-        Args: { p_email: string; p_name: string; p_password: string }
-        Returns: string
+      admin_verify_credentials: {
+        Args: { p_email: string; p_password: string }
+        Returns: boolean
       }
       create_miss_candidate: {
         Args: {
@@ -870,6 +1209,21 @@ export type Database = {
         Returns: undefined
       }
       increment_hero_likes: { Args: { hero_uuid: string }; Returns: undefined }
+      submit_activity_registration: {
+        Args: {
+          p_age: number
+          p_commercial_name: string
+          p_discipline: string
+          p_district: string
+          p_experience_years: number
+          p_fingerprint?: string
+          p_full_name: string
+          p_ip?: string
+          p_phone: string
+          p_weight_category?: string
+        }
+        Returns: string
+      }
       submit_miss_registration:
         | {
             Args: {
@@ -898,6 +1252,23 @@ export type Database = {
             }
             Returns: string
           }
+      submit_partner_subscription: {
+        Args: {
+          p_activity_sector: string
+          p_contribution_details?: string
+          p_contribution_type?: string
+          p_email: string
+          p_fingerprint?: string
+          p_ip?: string
+          p_item_keys: string[]
+          p_kind: string
+          p_organization_name: string
+          p_phone: string
+          p_representative_name: string
+          p_representative_position: string
+        }
+        Returns: string
+      }
       submit_quote_request: {
         Args: {
           p_email: string
@@ -918,45 +1289,23 @@ export type Database = {
         }
         Returns: string
       }
-      submit_stand_reservation:
-        | {
-            Args: {
-              p_stand_name: string
-              p_stand_phone: string
-              p_stand_type: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_quantity?: number
-              p_stand_name: string
-              p_stand_phone: string
-              p_stand_type: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_price_fcfa?: number
-              p_quantity?: number
-              p_stand_name: string
-              p_stand_phone: string
-              p_stand_type: string
-              p_total_price?: number
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_quantity?: number
-              p_stand_name: string
-              p_stand_phone: string
-              p_stand_type: string
-              p_total_price?: number
-            }
-            Returns: string
-          }
+      submit_stand_reservation: {
+        Args: {
+          p_activity_sector?: string
+          p_email?: string
+          p_fingerprint?: string
+          p_ip?: string
+          p_price_fcfa?: number
+          p_quantity?: number
+          p_representative_name?: string
+          p_representative_position?: string
+          p_stand_name: string
+          p_stand_phone: string
+          p_stand_type: string
+          p_total_price?: number
+        }
+        Returns: string
+      }
       submit_talent_application: {
         Args: {
           p_arrondissement: string
@@ -987,12 +1336,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1016,11 +1365,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1041,11 +1390,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1066,11 +1415,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1083,11 +1432,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1097,6 +1446,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
