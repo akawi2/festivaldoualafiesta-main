@@ -1,7 +1,7 @@
 export const translations = {
   fr: {
     // Hero section
-    heroTitle: "Concours Miss Douala Fiesta 2025",
+    heroTitle: "Concours Miss Douala Fiesta 2026",
     heroSubtitle: "Révélez votre beauté, votre talent et votre personnalité",
     elegance: "Élégance",
     grace: "Grâce",
@@ -221,7 +221,7 @@ export const translations = {
   },
   en: {
     // Hero section
-    heroTitle: "Miss Douala Fiesta 2025 Contest",
+    heroTitle: "Miss Douala Fiesta 2026 Contest",
     heroSubtitle: "Reveal your beauty, talent and personality",
     elegance: "Elegance",
     grace: "Grace",

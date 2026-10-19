@@ -6,12 +6,13 @@
     "program": "Programme",
     "media": "Médiathèque",
     "contacts": "Contacts",
-    "reserveStand": "Réserver mon stand",
+    "reserveStand": "Réservez mon espace (PROMED 3 jours)",
     "reserve": "Réserver",
     "mobileReserve": "Inscription",
     "registerAsMiss": "Inscription Miss",
     "missContest": "Concours Miss Douala Fiesta 2026",
-    "herosKwatt": "Les Héros du Kwat"
+    "herosKwatt": "Les Héros du Kwat",
+    "allActivities": "Toutes les activités"
   },
   "hero": {
     "slogan": "Po la bwam eeeeh!",
@@ -22,7 +23,7 @@
     "discoverProgram": "Découvrir le programme",
     "highlight": "Me mettre en lumière",
     "saveTheDate": "Save the date",
-    "eventDate": "18 décembre 2026",
+    "eventDate": "Du 18 décembre 2026 au 2 janvier 2027",
     "countdownDays": "Jours",
     "countdownHours": "Heures",
     "countdownMinutes": "Minutes",
@@ -36,19 +37,13 @@
     "mayorName": "Dr Roger MBASSA NDINE",
     "mayorTitle": "Maire de la Ville de Douala",
     "doualais": "Chers Doualais, Partenaires et Amis de Douala,",
-    "introduction1": "Depuis 2020, Douala Fiesta s'est imposé comme l'un des rendez-vous socio-culturels les plus attendus de notre cité. Ce succès reflète l'âme vibrante d'une ville qui refuse de limiter son rayonnement à sa seule dimension économique.",
-    "introduction2": "Car Douala, capitale économique du Cameroun, cœur battant de la sous-région, est bien plus qu'un simple carrefour d'affaires : c'est un territoire de rencontres et de métissages où se croisent les langues, les musiques, les cuisines, les traditions et les ambitions d'un pays en mouvement.",
-    "introduction3": "Cette vitalité permanente portait en elle une évidence : un événement capable de refléter cette énergie, de la canaliser et de l'amplifier. C'est dans cet esprit qu'est né Douala Fiesta en 2020.",
-    "introduction4": "Au fil des éditions, Douala Fiesta trace une trajectoire claire : incarner à la fois la vision d'une ville qui se veut capitale culturelle de l'Afrique centrale, et l'impact concret d'un rendez-vous qui transforme le quotidien de nos habitants.",
-    "introduction5": "En 2026, nous franchissons une étape décisive en nous déployant pour la première fois sur un site principal, tout en maintenant un ancrage territorial via des activités éphémères dans chaque arrondissement.",
+    "introduction1": "Depuis son lancement en 2020, Douala Fiesta s'est imposé comme un rendez-vous socioculturel incontournable. Ce succès témoigne du dynamisme d'une ville qui refuse de se définir uniquement par sa puissance économique.",
+    "introduction2": "Capitale économique du Cameroun et véritable poumon de la sous-région, Douala dépasse le simple statut de carrefour d'affaires. C'est un espace d'échanges et de brassage culturel où convergent les langues, les arts culinaires, les musiques et les ambitions d'une nation en pleine mutation. C'est pour canaliser et amplifier cette immense énergie que le Festival Douala Fiesta a vu le jour.",
+    "introduction3": "En l'espace de 6 éditions, notre événement a transcendé le divertissement pour devenir un véritable incubateur d'initiatives artistiques, sociales et économiques. Il s'agit désormais d'une scène majeure pour nos musiciens, d'un tremplin commercial pour nos artisans, d'une vitrine interactive pour nos entreprises, et d'un moment de communion privilégié pour nos familles.",
+    "introduction4": "En 2026, nous franchissons un nouveau cap au Parcours Vita avec une édition articulée autour de trois axes majeurs : la valorisation de notre richesse culturelle à travers ses plus talentueux représentants, la connectivité et l'innovation pour notre jeunesse, ainsi que l'unité et la solidarité locale. J'adresse mes plus sincères remerciements à nos fidèles partenaires et souhaite la bienvenue à ceux qui nous rejoignent pour célébrer l'excellence et bâtir l'avenir de notre cité.",
     "introduction6": "Vive le Festival Douala Fiesta 2026 ! Vive Douala ! Vive le Cameroun !",
-    "point": "En seulement cinq éditions, notre événement a su dépasser le cadre du simple divertissement :",
-    "point1": "Un espace où nos musiciens rencontrent leur public et élargissent leur audience",
-    "point2": "Un marché vivant où nos artisans et créateurs trouvent de nouveaux clients",
-    "point3": "Une plateforme où nos entreprises dialoguent directement avec des milliers de consommateurs",
-    "point4": "Un moment unique où nos familles se rassemblent, partagent et construisent des souvenirs communs",
-    "welcome": "Bienvenue sur le site officiel du Festival Douala Fiesta 2026, quatorze (14) jours de fête fructueuse, de culture et de partage au cœur de Douala.",
-    "dates": "Du 18 décembre 2026 au 1er janvier 2027, plongez dans un univers unique mêlant musique, danse, gastronomie et traditions locales.",
+    "welcome": "Bienvenue sur le site officiel du Festival Douala Fiesta 2026, seize (16) jours de fête fructueuse, de culture et de partage au cœur de Douala.",
+    "dates": "Du 18 décembre 2026 au 2 janvier 2027, au Parcours Vita de Douala, plongez dans un univers unique mêlant musique, danse, gastronomie et traditions locales.",
     "mission": "Notre mission",
     "missionText": "Promouvoir la culture camerounaise et africaine, renforcer le vivre-ensemble et offrir un espace de divertissement, d'échanges et de valorisation des talents locaux.",
     "approach": "Notre approche",
@@ -74,7 +69,8 @@
       "artists": "Artistes valorisés",
       "exhibitors": "Exposants cumulés",
       "districts": "Arrondissements concernés"
-    }
+    },
+    "allActivities": "Découvrir toutes les activités"
   },
   "services": {
     "title": "Galerie de",
@@ -100,7 +96,7 @@
     "title1": "Concours",
     "title2": "Miss Douala Fiesta 2026",
     "concours": "Miss Douala Fiesta 2026",
-    "participate": "Je participe à MDF25",
+    "participate": "Je participe à MDF26",
     "click": "Cliquez pour découvrir le concours !",
     "subtitle": "Votez pour votre candidate préférée et suivez le classement en temps réel.",
     "vote": "Voter",
@@ -184,7 +180,7 @@
   "program": {
     "title": "Programme du",
     "festival": "Festival",
-    "description": "Découvrez le programme complet de DOUALA FIESTA 2026 sur 14 jours d'événements exceptionnels.",
+    "description": "Découvrez le programme complet de DOUALA FIESTA 2026, du 18 décembre 2026 au 2 janvier 2027, au Parcours Vita de Douala.",
     "backToHome": "Retour à l'accueil",
     "day": "Jour",
     "noEvents": "Aucun événement prévu",
@@ -222,26 +218,75 @@
     "yourNeighbor": "Ton/Votre quartier",
     "yourdistrict": "Ton/Votre arrondissement",
     "standTypes": {
-      "reserveStand": "Réserver mon stand",
-      "typeOfstand": "Type de stand",
+      "reserveStand": "Réservez mon espace (PROMED 3 jours)",
+      "typeOfstand": "Type d'espace",
       "social": "Stand Social",
       "business": "Stand Business",
       "partner": "Stand Partenaire",
-      "exposant": "Name / Enterprise",
+      "exposant": "Nom de l'exposant / entreprise",
       "placeholderName": "Nom de votre entreprise ou nom complet",
       "expoPhone": "Numéro de téléphone",
-      "reservation": "Reserver ce stand",
-      "socialDescript": "Pour 09M²",
-      "businessDescript": "Pour 09M²",
-      "patnerDescript": "jusqu'à 25M²",
-      "quantity": "Quantité"
+      "reservation": "Réserver cet espace",
+      "socialDescript": "Pour 9 m²",
+      "businessDescript": "Pour 9 m²",
+      "patnerDescript": "Pour 25 m²",
+      "quantity": "Quantité",
+      "shared": "Emplacement mutuel",
+      "sharedDescript": "3 m² maximum",
+      "representative": "Nom & prénom du représentant",
+      "position": "Fonction",
+      "sector": "Secteur d'activité",
+      "email": "E-mail",
+      "benefitsTitle": "Avantages de l'exposant",
+      "benefits": [
+        "Inscription sur la liste officielle des exposants",
+        "Présence sur le site web et les réseaux sociaux du festival",
+        "Badges (2 par stand, supplémentaires sur demande)",
+        "Espaces équipés (éclairage, alimentation électrique)",
+        "Opportunités de networking avec sponsors, médias et institutions"
+      ],
+      "invoiceNote": "Une facture officielle et les coordonnées bancaires vous seront communiquées dès réception de votre souscription."
     },
     "infoTitle": "Informations importantes",
     "info1": "Les réservations sont traitées par ordre d'arrivée",
     "info2": "Confirmation sous 48h par téléphone",
     "info3": "Acompte de 50% à la réservation",
     "address": "Adresse",
-    "hours": "Horaires"
+    "hours": "Horaires",
+    "spaces": {
+      "tabExhibition": "Exposition",
+      "tabSponsoring": "Sponsoring",
+      "tabVisibility": "Visibilité",
+      "sponsoringTitle": "Packs de sponsoring",
+      "visibilityTitle": "Espaces de visibilité",
+      "packLabel": "Choix du pack",
+      "organization": "Nom de l'exposant / entreprise",
+      "representative": "Nom & prénom du représentant",
+      "position": "Fonction",
+      "sector": "Secteur d'activité",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "contribution": "Contribution",
+      "financial": "Financier",
+      "inKind": "En nature",
+      "contributionDetails": "Précisez votre contribution",
+      "onQuote": "Sur devis",
+      "total": "Total",
+      "submitSponsoring": "Souscrire à ce pack",
+      "submitVisibility": "Souscrire à ces espaces",
+      "pickOne": "Veuillez sélectionner au moins une option.",
+      "sending": "Envoi...",
+      "successTitle": "Souscription envoyée !",
+      "successText": "Une facture et les coordonnées bancaires vous seront communiquées dès réception de votre souscription.",
+      "errorText": "Une erreur est survenue lors de l'envoi. Veuillez réessayer.",
+      "loading": "Chargement...",
+      "groups": {
+        "media": "Espaces média & conférences",
+        "digital": "Supports digitaux",
+        "spots": "Diffusion de spots publicitaires",
+        "other": "Autres supports"
+      }
+    }
   },
   "footer": {
     "description": "Suivez notre histoire, notre équipe engagée et nos valeurs qui font de ce festival un moteur incontournable du dynamisme économique et culturel.",
@@ -262,5 +307,212 @@
     "loading": "Chargement...",
     "error": "Erreur",
     "success": "Succès"
+  },
+  "missSteps": {
+    "title": "Le parcours Miss Douala Fiesta",
+    "subtitle": "De la présélection au sacre, en 7 étapes",
+    "candidates": "candidates",
+    "allCandidates": "Toutes les candidates",
+    "steps": [
+      {
+        "title": "Présélections dans les arrondissements",
+        "count": "100 candidates",
+        "place": "Arrondissements de Douala",
+        "period": "Pendant la caravane (7 novembre – 12 décembre 2026)"
+      },
+      {
+        "title": "Entraînement intensif",
+        "count": "Toutes les candidates",
+        "place": "Site désigné par la CUD",
+        "period": "Jusqu'au 21 décembre 2026"
+      },
+      {
+        "title": "Grande parade (cérémonie d'ouverture)",
+        "count": "40 candidates",
+        "place": "Site Douala Fiesta – Parcours Vita",
+        "period": "23 décembre 2026"
+      },
+      {
+        "title": "Demi-finale",
+        "count": "15 candidates",
+        "place": "Site Douala Fiesta – Parcours Vita",
+        "period": "26 décembre 2026"
+      },
+      {
+        "title": "Mise au vert (stage bloqué)",
+        "count": "10 candidates",
+        "place": "Site désigné par la CUD",
+        "period": "Du 28 décembre 2026 au 2 janvier 2027"
+      },
+      {
+        "title": "Finale",
+        "count": "10 candidates",
+        "place": "Site Douala Fiesta – Parcours Vita",
+        "period": "2 janvier 2027"
+      },
+      {
+        "title": "Sacre",
+        "count": "Miss + 2 Dauphines",
+        "place": "Site Douala Fiesta – Parcours Vita",
+        "period": "2 janvier 2027"
+      }
+    ]
+  },
+  "activities": {
+    "title": "Les activités du",
+    "titleSpan": "festival 2026",
+    "subtitle": "Du 18 décembre 2026 au 2 janvier 2027 au Parcours Vita, et dans les arrondissements de Douala avec la caravane.",
+    "intro": "FESTIVAL DOUALA FIESTA – PÔ LA BWAM ! est le grand rendez-vous populaire et culturel de la ville. Pour sa 7ème édition, le festival va à la rencontre des habitants des arrondissements, valorise les talents locaux, soutient l'économie et renforce la solidarité.",
+    "backToHome": "Retour à l'accueil",
+    "register": "Je m'inscris",
+    "period": "Période",
+    "goals": "Objectifs",
+    "seeProgram": "Voir le programme",
+    "caravan": {
+      "name": "La Caravane",
+      "short": "Cinq étapes, cinq arrondissements : la caravane de mobilisation lance la dynamique du festival au plus près des habitants.",
+      "period": "Du 7 novembre au 12 décembre 2026",
+      "text": "Cinq samedis, cinq arrondissements : la caravane de mobilisation parcourt Douala pour faire vivre le festival au plus près des habitants. Chaque étape accueille les sélections locales des activités du programme, et les lauréats de chaque arrondissement sont invités à la phase finale, sur le site officiel de Douala Fiesta.",
+      "calendar": "Calendrier de la caravane",
+      "stops": [
+        {
+          "date": "Samedi 7 novembre 2026",
+          "place": "Douala 1er",
+          "venues": "Pharmacie la Rive · Petit stade NGODI"
+        },
+        {
+          "date": "Samedi 14 novembre 2026",
+          "place": "Douala 2ème",
+          "venues": "New-Bell (Sacré-Cœur)"
+        },
+        {
+          "date": "Samedi 21 novembre 2026",
+          "place": "Douala 3ème",
+          "venues": "Total Nkolbong · Japoma"
+        },
+        {
+          "date": "Samedi 28 novembre 2026",
+          "place": "Douala 4ème",
+          "venues": "Grand Baobab · Mabanda"
+        },
+        {
+          "date": "Samedi 12 décembre 2026 (clôture)",
+          "place": "Douala 5ème",
+          "venues": "Kotto Carrefour des immeubles · Carrefour PK14 · Carrefour Bassong Logpom · Carrefour lycée de Makepe · Ange Raphaël"
+        }
+      ]
+    },
+    "promed": {
+      "name": "PROME'D",
+      "short": "Le volet économique du festival : exposition corporate, rendez-vous B2B, pitchs devant investisseurs et démonstrations technologiques.",
+      "period": "Du 21 au 23 décembre 2026",
+      "text": "PROME'D accueille tous types d'entreprises et leur offre des avantages adaptés à chaque besoin : visibilité, mise en réseau, accès au financement, expertise-conseil et innovation. Cet espace d'affaires stratégique réunit entrepreneurs, décideurs économiques, investisseurs et acteurs de l'innovation autour de six dispositifs :",
+      "items": [
+        "Exposition corporate",
+        "Échanges entre capitaines d'industrie",
+        "Rendez-vous B2B qualifiés",
+        "Consultations gratuites en finance, fiscalité et droit des affaires",
+        "Sessions de pitch devant des investisseurs",
+        "Démonstrations technologiques (IA et réalités virtuelles)"
+      ],
+      "closing": "PROME'D s'inscrit ainsi comme un levier d'attractivité économique pour Douala et de valorisation entrepreneuriale nationale.",
+      "cta": "Réservez mon espace"
+    },
+    "miss": {
+      "name": "Miss Douala Fiesta",
+      "short": "Le glamour au service du rayonnement de Douala : une Miss et deux Dauphines, ambassadrices de la ville.",
+      "period": "Du 7 novembre 2026 au 2 janvier 2027",
+      "text": "Un concours qui met à l'honneur la jeunesse féminine de Douala, alliant glamour, charme et rayonnement culturel. Plus qu'un concours de beauté, une vitrine de la culture, du dynamisme et de l'attractivité de la ville, portée par ses futures ambassadrices.",
+      "goals": [
+        "Promouvoir l'image et la culture de la ville de Douala.",
+        "Offrir à la jeunesse féminine une plateforme d'expression et de visibilité.",
+        "Renforcer le rayonnement du festival Douala Fiesta.",
+        "Offrir aux partenaires une exposition auprès d'un public jeune, engagé et festif.",
+        "Élire une Miss et deux Dauphines, ambassadrices de la ville pendant leur règne."
+      ],
+      "cta": "Voir le concours"
+    },
+    "noel": {
+      "name": "Noël Solidaire : La Table du Cœur",
+      "short": "Le 25 décembre 2026, un repas, des cadeaux et un spectacle pour 500 enfants démunis de la ville de Douala.",
+      "period": "25 décembre 2026",
+      "text": "À Douala, des centaines d'enfants n'ont jamais connu la magie de Noël. Pas de cadeau à déballer, pas de sourire partagé sous les lumières de décembre. Ce 25 décembre 2026, le Maire de la ville de Douala veut changer cela pour 500 enfants démunis : un repas, des cadeaux, un spectacle, un espace de jeu rien que pour eux. Une journée pour leur offrir, l'espace d'un instant, l'enfance qu'ils méritent.",
+      "goals": [
+        "Offrir un repas de Noël chaleureux et convivial à 500 enfants démunis de Douala.",
+        "Distribuer un cadeau à chaque enfant présent, afin de marquer symboliquement la fête.",
+        "Proposer un spectacle festif pour créer un moment de joie collective.",
+        "Aménager un espace enfants convivial pour prolonger la fête dans la détente et le jeu.",
+        "Renforcer la solidarité municipale et mobiliser la société civile et le secteur privé autour d'une cause commune.",
+        "Offrir une visibilité positive à l'engagement social de la Mairie de Douala ainsi qu'à ses nombreux partenaires."
+      ]
+    },
+    "mami": {
+      "name": "Mami Makala & Papa Beignet",
+      "short": "Le Grand Prix des piliers de la restauration informelle de Douala : un concours populaire, festif et fédérateur.",
+      "period": "Sélections pendant la caravane, finale au Parcours Vita",
+      "text": "Les Mami Makala et Papa Beignet sont des piliers de la restauration informelle à Douala. Présents dans tous les quartiers, au cœur des marchés, écoles et artères populaires, ils incarnent l'énergie et la débrouillardise entrepreneuriale de la ville. Ce Grand Prix propose de les mettre à l'honneur à travers un concours populaire, festif et fédérateur, en parfaite cohérence avec l'esprit de Douala Fiesta.",
+      "goals": [
+        "Valoriser ces entrepreneures du quotidien et leur savoir-faire culinaire.",
+        "Ancrer le festival au cœur des quartiers, marchés, écoles et artères populaires de Douala.",
+        "Offrir une animation populaire, familiale et à forte portée médiatique.",
+        "Créer une visibilité forte pour les marques partenaires du festival."
+      ],
+      "stepsTitle": "4 étapes : du recrutement des candidats à la grande finale",
+      "steps": [
+        "Recrutement : acquisition de produits partenaires ou inscription en ligne.",
+        "Sélection : dans chaque arrondissement, 3 candidats par discipline et 1 finaliste par discipline.",
+        "Master class : gestion des capitaux, hygiène et sécurité, fabrication et conservation des produits.",
+        "Grande finale : sur le site du Parcours Vita, 6 candidats par discipline, un jury et la remise des prix."
+      ]
+    },
+    "besua": {
+      "name": "BESUA : Lutte traditionnelle inter-arrondissement",
+      "short": "Le tournoi de lutte traditionnelle qui rapproche les communautés de Douala : poids légers (-75 kg) et poids lourds (+80 kg).",
+      "period": "Sélections pendant la caravane, finale au Parcours Vita",
+      "text": "Le tournoi de lutte traditionnelle inter-arrondissement s'inscrit dans une dynamique de rapprochement des communautés, à un moment où le vivre ensemble est au cœur des préoccupations socioculturelles de la capitale économique. Cette activité contribue à la valorisation du patrimoine culturel et sportif de la ville de Douala.",
+      "organisation": "Les phases de sélection se tiennent dans chaque arrondissement, à l'occasion du passage de la caravane. Elles se déroulent en une journée, en deux phases : pesée et présélection, puis éliminatoires et finale locale. Les meilleurs lutteurs de chaque arrondissement sont ensuite qualifiés pour la grande finale, sur le site du Festival Douala Fiesta.",
+      "categories": "Deux catégories : les poids légers (-75 kg) et les poids lourds (+80 kg)."
+    },
+    "brain": {
+      "name": "Douala Brain Games (4ème édition)",
+      "short": "Sept disciplines de sports intellectuels : dames, ludo, scrabble, échecs, ngeka/songo, langa na tila et puzzle.",
+      "period": "Éliminatoires en octobre-novembre, finales du 18 au 20 décembre 2026",
+      "text": "Organisés par la Communauté Urbaine de Douala, les Douala Brain Games densifient la pratique des sports intellectuels, encadrent la jeunesse et proposent une offre de loisirs éducatifs. La 3ème édition s'est tenue au Parcours Vita de Bonamoussadi du 19 au 21 décembre 2025.",
+      "disciplines": "Disciplines : jeu de dames, ludo, scrabble, jeu d'échecs, ngeka/songo, langa na tila (duala, bassa, bakoko) et puzzle.",
+      "news": "Nouveautés 2026 : présélections dans chaque arrondissement, langa na tila ouvert aux 10-15 ans (duala, bakoko, bassa), catégories vétérans et juniors pour le songo et le ludo, et une compétition de puzzle animée par l'association Zenith Peak.",
+      "calendar": "Éliminatoires dans les cantons (Akwa, Bell, Bassa, Bakoko, Bele-Bele, Deido) en octobre et novembre 2026, puis phases finales au Parcours Vita du 18 au 20 décembre 2026.",
+      "support": "Appui technique : Fédération camerounaise des échecs (FECADE), Fédération camerounaise de scrabble (FECASCRAB), Fédération camerounaise de jeu de dames et initiés aux jeux traditionnels."
+    },
+    "shows": {
+      "name": "Spectacles et concerts (show live)",
+      "short": "Têtes d'affiche et jeunes talents sur scène, du 18 décembre 2026 au 2 janvier 2027.",
+      "period": "Du 18 décembre 2026 au 2 janvier 2027",
+      "text": "Le spectacle Douala Fiesta réunit têtes d'affiche et jeunes talents à travers des concerts thématiques (religieux, folklorique, old school, jeunesse et urbain) pour une expérience variée, riche, festive et ouverte à tous, au Parcours Vita de Douala."
+    },
+    "forms": {
+      "title": "Inscription",
+      "for": "Inscription à l'activité",
+      "fullName": "Nom et prénom",
+      "age": "Âge",
+      "commercialName": "Nom commercial",
+      "commercialNameBesua": "Nom commercial / nom de lutteur",
+      "district": "Quartier / arrondissement",
+      "experience": "Ancienneté dans le métier (années)",
+      "phone": "Téléphone",
+      "discipline": "Discipline",
+      "mami_makala": "Mami Makala",
+      "papa_beignet": "Papa Beignet",
+      "besua": "Besua (lutte)",
+      "weight": "Catégorie de poids",
+      "light": "Poids léger (-75 kg)",
+      "heavy": "Poids lourd (+80 kg)",
+      "choose": "Choisir...",
+      "submit": "Envoyer mon inscription",
+      "sending": "Envoi...",
+      "successTitle": "Inscription envoyée !",
+      "successText": "Votre inscription a bien été enregistrée. Nous vous contacterons bientôt.",
+      "errorTitle": "Erreur",
+      "errorText": "Une erreur est survenue lors de l'envoi. Veuillez réessayer."
+    }
   }
 }

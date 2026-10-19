@@ -1,10 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Heart, Trophy, Clock, House, Locate } from "lucide-react";
+import { Users, Heart, Trophy, Clock, House, Locate, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import lanceGauche from "@/assets/lance-gauche.png";
 import lanceDroite from "@/assets/lance-droite.png";
 import patternBg from "@/assets/pattern-background.png";
 import mayorEditorialImage from "@/assets/mayor-editorial-image.png";
+
+const newActivitiesLeft = [{ key: "caravan" }, { key: "promed" }, { key: "noel" }];
+const newActivitiesRight = [{ key: "mami" }, { key: "besua" }, { key: "brain" }];
 
 const AboutSection = () => {
   const { t } = useTranslation();
@@ -46,7 +51,7 @@ const AboutSection = () => {
           <div className="text-white p-4 border-b-4 border-gold">
             <div className="text-center">
               <h3 className="text-lg font-bold tracking-wider text-gold">{t("about.mayorWord")}</h3>
-              <div className="text-xs opacity-80 mt-1 text-gold">Festival Douala Fiesta 2025</div>
+              <div className="text-xs opacity-80 mt-1 text-gold">Festival Douala Fiesta 2026</div>
             </div>
           </div>
           {/* Article Content */}
@@ -78,19 +83,7 @@ const AboutSection = () => {
 
                   <p className="text-sm">{t("about.introduction3")}</p>
 
-                  <div className="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-                    <p className="text-sm font-medium text-gray-900 mb-2">{t("about.point")}</p>
-                    <ul className="space-y-1 text-xs text-gray-700">
-                      <li>• {t("about.point1")}</li>
-                      <li>• {t("about.point2")}</li>
-                      <li>• {t("about.point3")}</li>
-                      <li>• {t("about.point4")}</li>
-                    </ul>
-                  </div>
-
                   <p className="text-sm">{t("about.introduction4")}</p>
-
-                  <p className="text-sm font-medium text-gold">{t("about.introduction5")}</p>
 
                   <div className="text-center pt-4 border-t border-gray-200">
                     <p className="text-lg font-bold text-gray-900">{t("about.introduction6")}</p>
@@ -175,6 +168,12 @@ const AboutSection = () => {
               <span className="font-medium text-gold">{t("about.funActSpan")}: </span>
               {t("about.funActivities")}
             </p>
+            {newActivitiesLeft.map((a) => (
+              <p key={a.key} className="text-lg text-muted-foreground leading-relaxed">
+                <span className="font-medium text-gold">{t(`activities.${a.key}.name`)} : </span>
+                {t(`activities.${a.key}.short`)}
+              </p>
+            ))}
           </div>
           <div className="space-y-4 md:space-y-6">
             <h3 className="hidden md:block text-2xl font-bold text-foreground">&nbsp;&nbsp;</h3>
@@ -186,7 +185,22 @@ const AboutSection = () => {
               <span className="font-medium text-gold">{t("about.salesSpan")}: </span>
               {t("about.sales")}
             </p>
+            {newActivitiesRight.map((a) => (
+              <p key={a.key} className="text-lg text-muted-foreground leading-relaxed">
+                <span className="font-medium text-gold">{t(`activities.${a.key}.name`)} : </span>
+                {t(`activities.${a.key}.short`)}
+              </p>
+            ))}
           </div>
+        </div>
+
+        <div className="text-center mb-16">
+          <Button asChild size="lg" className="bg-gradient-gold text-navy font-semibold hover:scale-105 transition-transform">
+            <Link to="/activites">
+              {t("about.allActivities")}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
         </div>
 
         {/* Stats */}

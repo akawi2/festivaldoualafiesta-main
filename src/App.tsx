@@ -12,6 +12,7 @@ import MissElection from "./pages/MissElection";
 // Rubrique retirée pour le moment (demande du 2026-09-10).
 // import HerosKwatt from "./pages/HerosKwatt";
 import Programme from "./pages/Programme";
+import Activities from "./pages/Activities";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,7 @@ const App = () => (
             {/* Rubrique retirée pour le moment (demande du 2026-09-10). */}
             {/* <Route path="/heros-kwatt" element={<HerosKwatt />} /> */}
             <Route path="/programme" element={<Programme />} />
+            <Route path="/activites" element={<Activities />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

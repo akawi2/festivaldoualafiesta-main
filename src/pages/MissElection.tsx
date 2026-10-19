@@ -42,6 +42,7 @@ import { useTranslation as useCustomTranslation } from "@/hooks/useTranslation";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { SEO } from "@/components/SEO";
 import Navigation from "@/components/Navigation";
+import MissStepsTimeline from "@/components/MissStepsTimeline";
 
 // Imports des images candidates
 import candidate1 from "@/assets/candidate-1.jpg";
@@ -406,13 +407,13 @@ const MissElection = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Miss Douala Fiesta 2025 - Élection de Miss Cameroun"
-        description="Participez à l'élection Miss Douala Fiesta 2025. Découvrez les candidates, votez pour votre favorite et suivez cette compétition prestigieuse de beauté au Cameroun."
-        keywords="Miss Douala Fiesta, Miss Cameroun, élection miss, concours beauté, candidates, vote miss, Douala 2025"
+        title="Miss Douala Fiesta 2026 - Élection de Miss Cameroun"
+        description="Participez à l'élection Miss Douala Fiesta 2026. Découvrez les candidates, votez pour votre favorite et suivez cette compétition prestigieuse de beauté au Cameroun."
+        keywords="Miss Douala Fiesta, Miss Cameroun, élection miss, concours beauté, candidates, vote miss, Douala 2026"
         canonicalUrl="https://festivaldoualafiesta.cm/miss-election"
         ogImage="https://lovable.dev/opengraph-image-p98pqg.png"
-        ogTitle="Miss Douala Fiesta 2025 - Votez pour votre candidate favorite"
-        ogDescription="Découvrez les candidates de Miss Douala Fiesta 2025 et votez pour votre favorite dans cette compétition prestigieuse."
+        ogTitle="Miss Douala Fiesta 2026 - Votez pour votre candidate favorite"
+        ogDescription="Découvrez les candidates de Miss Douala Fiesta 2026 et votez pour votre favorite dans cette compétition prestigieuse."
       />
       <Navigation />
       {/* Header avec image de fond */}
@@ -447,7 +448,7 @@ const MissElection = () => {
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 flex items-center justify-center gap-4 drop-shadow-lg">
               <Crown className="h-12 w-12 text-gold drop-shadow-lg" />
-              Miss Douala Fiesta 2025
+              Miss Douala Fiesta 2026
               <Crown className="h-12 w-12 text-gold drop-shadow-lg" />
             </h1>
             <p className="text-xl text-white/95 max-w-2xl mx-auto drop-shadow-md mb-6">
@@ -520,6 +521,10 @@ const MissElection = () => {
           </Tabs>
         </DialogContent>
       </Dialog>
+
+      <div className="container mx-auto px-4 pt-12">
+        <MissStepsTimeline />
+      </div>
 
       {/* Navigation Tabs */}
       <div className="container mx-auto px-4 py-8">

@@ -66,6 +66,7 @@ const Navigation = () => {
   ];
 
   const activitiesSubItems = [
+    { name: t('nav.allActivities'), path: "/activites" },
     { name: t('nav.missContest'), path: "/miss-election" },
     // Rubrique retirée pour le moment (demande du 2026-09-10).
     // { name: t('nav.herosKwatt'), path: "/heros-kwatt" },
@@ -301,7 +302,7 @@ const Navigation = () => {
                       setMobileReserveOpen(false);
                     }}
                     tabIndex={mobileReserveOpen ? 0 : -1}
-                    className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors text-center"
+                    className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors text-center"
                   >
                     {t('nav.registerAsMiss')}
                   </button>
@@ -312,7 +313,7 @@ const Navigation = () => {
                       setMobileReserveOpen(false);
                     }}
                     tabIndex={mobileReserveOpen ? 0 : -1}
-                    className="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors text-center"
+                    className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gold hover:bg-gold-dark transition-colors text-center"
                   >
                     {t('nav.reserveStand')}
                   </button>
