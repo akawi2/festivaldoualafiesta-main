@@ -66,8 +66,11 @@ const Navigation = () => {
   ];
 
   const activitiesSubItems = [
+    { name: t('nav.promed'), path: "/activites#promed" },
+    { name: t('nav.missDoualaFiesta'), path: "/miss-election" },
+    { name: t('nav.showLive'), path: "/activites#spectacles" },
+    { name: t('nav.tableDuCoeur'), path: "/activites#noel" },
     { name: t('nav.allActivities'), path: "/activites" },
-    { name: t('nav.missContest'), path: "/miss-election" },
     // Rubrique retirée pour le moment (demande du 2026-09-10).
     // { name: t('nav.herosKwatt'), path: "/heros-kwatt" },
   ];

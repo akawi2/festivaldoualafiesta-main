@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,19 @@ const ActivitySection = ({ id, name, period, children }: SectionProps) => (
 const Activities = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [registration, setRegistration] = useState<{ disciplines: ActivityDiscipline[]; title: string } | null>(null);
+
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    const timer = setTimeout(() => {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [location.hash, location.key]);
 
   const list = (key: string) => t(key, { returnObjects: true }) as string[];
   const stops = t("activities.caravan.stops", { returnObjects: true }) as CaravanStop[];
