@@ -6,7 +6,7 @@
     "program": "Programme",
     "media": "Médiathèque",
     "contacts": "Contacts",
-    "reserveStand": "Réservez mon espace (PROMED 3 jours)",
+    "reserveStand": "Réservez mon espace",
     "reserve": "Réserver",
     "mobileReserve": "Inscription",
     "registerAsMiss": "Inscription Miss",
@@ -222,7 +222,7 @@
     "yourNeighbor": "Ton/Votre quartier",
     "yourdistrict": "Ton/Votre arrondissement",
     "standTypes": {
-      "reserveStand": "Réservez mon espace (PROMED 3 jours)",
+      "reserveStand": "Réservez mon espace",
       "typeOfstand": "Type d'espace",
       "social": "Stand Social",
       "business": "Stand Business",
@@ -249,7 +249,8 @@
         "Espaces équipés (éclairage, alimentation électrique)",
         "Opportunités de networking avec sponsors, médias et institutions"
       ],
-      "invoiceNote": "Une facture officielle et les coordonnées bancaires vous seront communiquées dès réception de votre souscription."
+      "invoiceNote": "Une facture officielle et les coordonnées bancaires vous seront communiquées dès réception de votre souscription.",
+      "periodNote": "Tarifs de l'espace du 18 décembre 2026 au 2 janvier 2027, au Parcours Vita."
     },
     "infoTitle": "Informations importantes",
     "info1": "Les réservations sont traitées par ordre d'arrivée",

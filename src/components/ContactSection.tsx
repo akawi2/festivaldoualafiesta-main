@@ -520,6 +520,7 @@ const ContactSection = () => {
                 <CardTitle className="text-2xl font-bold text-foreground">
                   {t("contact.standTypes.reserveStand")}
                 </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">{t("contact.standTypes.periodNote")}</p>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="exhibition" className="w-full">

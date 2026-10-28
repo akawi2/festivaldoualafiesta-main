@@ -6,7 +6,7 @@
     "program": "Program",
     "media": "Media Library",
     "contacts": "Contacts",
-    "reserveStand": "Book my space (PROMED 3 days)",
+    "reserveStand": "Book my space",
     "reserve": "Reserve",
     "mobileReserve": "Registration",
     "registerAsMiss": "Miss Registration",
@@ -222,7 +222,7 @@
     "yourNeighbor": "Your neighborhood",
     "yourdistrict": "Your district",
     "standTypes": {
-      "reserveStand": "Book my space (PROMED 3 days)",
+      "reserveStand": "Book my space",
       "typeOfstand": "Type of space",
       "social": "Social Stand",
       "business": "Business Stand",
@@ -249,7 +249,8 @@
         "Equipped spaces (lighting, electrical outlet)",
         "Networking opportunities with sponsors, media and institutions"
       ],
-      "invoiceNote": "An official invoice and bank details will be sent to you upon receipt of your subscription."
+      "invoiceNote": "An official invoice and bank details will be sent to you upon receipt of your subscription.",
+      "periodNote": "Space rates from December 18, 2026 to January 2, 2027, at the Parcours Vita."
     },
     "infoTitle": "Important information",
     "info1": "Reservations are processed in order of arrival",

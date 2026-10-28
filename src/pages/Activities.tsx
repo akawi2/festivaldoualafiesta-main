@@ -157,6 +157,8 @@ const Activities = () => {
           <p className="text-muted-foreground leading-relaxed">{t("activities.promed.text")}</p>
           <Bullets items={list("activities.promed.items")} />
           <p className="text-muted-foreground leading-relaxed">{t("activities.promed.closing")}</p>
+          {/* En attente des infos de réservation de stand PROME'D (les tarifs du formulaire /contact
+              concernent l'espace du 18 décembre au 2 janvier, pas PROME'D). À réactiver ensuite.
           <Button
             onClick={() => navigate("/contact", { state: { highlight: "reserver-stand" } })}
             className="bg-gradient-gold text-navy font-semibold hover:scale-105 transition-transform"
@@ -164,6 +166,7 @@ const Activities = () => {
             {t("activities.promed.cta")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+          */}
         </ActivitySection>
 
         {/* Miss */}
