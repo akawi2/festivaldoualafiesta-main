@@ -4,6 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   Pagination, 
   PaginationContent, 
@@ -104,21 +107,36 @@ export function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
   const endIndex = startIndex + itemsPerPage;
   const currentRegistrations = registrations.slice(startIndex, endIndex);
 
-  const handleToggleVoting = async () => {
-    const success = await updateSetting("voting_enabled", !votingEnabled);
-    if (success) {
-      toast.success(votingEnabled ? "Votes gelés" : "Votes activés");
-    } else {
-      toast.error("Erreur lors de la mise à jour");
-    }
-  };
+  // Réglages publics (votes / inscriptions) : demandent le mot de passe de l'admin connecté.
+  const [pendingSetting, setPendingSetting] = useState<{
+    key: "voting_enabled" | "registration_enabled";
+    value: boolean;
+  } | null>(null);
+  const [settingPassword, setSettingPassword] = useState("");
+  const [settingSaving, setSettingSaving] = useState(false);
 
-  const handleToggleRegistration = async () => {
-    const success = await updateSetting("registration_enabled", !registrationEnabled);
-    if (success) {
-      toast.success(registrationEnabled ? "Inscriptions fermées" : "Inscriptions ouvertes");
+  const handleToggleVoting = () => setPendingSetting({ key: "voting_enabled", value: !votingEnabled });
+  const handleToggleRegistration = () => setPendingSetting({ key: "registration_enabled", value: !registrationEnabled });
+
+  const settingMessages = {
+    voting_enabled: { true: "Votes activés", false: "Votes gelés" },
+    registration_enabled: { true: "Inscriptions ouvertes", false: "Inscriptions fermées" },
+  } as const;
+
+  const confirmSettingChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pendingSetting) return;
+
+    setSettingSaving(true);
+    const result = await updateSetting(pendingSetting.key, pendingSetting.value, user.email, settingPassword);
+    setSettingSaving(false);
+
+    if (result.ok) {
+      toast.success(settingMessages[pendingSetting.key][String(pendingSetting.value) as "true" | "false"]);
+      setPendingSetting(null);
+      setSettingPassword("");
     } else {
-      toast.error("Erreur lors de la mise à jour");
+      toast.error(result.message || "Erreur lors de la mise à jour");
     }
   };
 
@@ -601,6 +619,47 @@ export function AdminDashboard({ user, onLogout }: AdminDashboardProps) {
           {activeTab === "partners" && <PartnersManager />}
         </div>
       </main>
+
+      <Dialog
+        open={!!pendingSetting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPendingSetting(null);
+            setSettingPassword("");
+          }
+        }}
+      >
+        <DialogContent className="bg-white border-admin-border">
+          <DialogHeader>
+            <DialogTitle className="text-admin-accent">Confirmer la modification</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Cette action change immédiatement ce que voit le public. Confirmez avec votre mot de passe administrateur.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={confirmSettingChange} className="space-y-4">
+            <div>
+              <Label htmlFor="settingPassword" className="text-gray-700">Votre mot de passe</Label>
+              <Input
+                id="settingPassword"
+                type="password"
+                value={settingPassword}
+                onChange={(e) => setSettingPassword(e.target.value)}
+                className="bg-white border-admin-border"
+                required
+                autoFocus
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button type="button" variant="outline" onClick={() => setPendingSetting(null)}>
+                Annuler
+              </Button>
+              <Button type="submit" disabled={settingSaving}>
+                {settingSaving ? "Enregistrement..." : "Confirmer"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

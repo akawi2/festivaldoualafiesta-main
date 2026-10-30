@@ -38,25 +38,44 @@ export function useSiteSettings() {
     }
   };
 
-  const updateSetting = async (key: string, value: boolean) => {
+  // Écrit via une RPC qui exige les identifiants d'un admin, puis relit la valeur
+  // réellement enregistrée : on ne se fie plus à l'état local (qui pouvait afficher
+  // un succès alors que rien n'était sauvegardé).
+  const updateSetting = async (
+    key: 'voting_enabled' | 'registration_enabled',
+    value: boolean,
+    actingEmail: string,
+    actingPassword: string,
+  ): Promise<{ ok: boolean; message?: string }> => {
     try {
-      const { error } = await supabase
-        .from('site_settings')
-        .update({ value: JSON.stringify(value), updated_at: new Date().toISOString() })
-        .eq('key', key);
+      const { error } = await supabase.rpc('admin_update_site_setting', {
+        p_acting_email: actingEmail,
+        p_acting_password: actingPassword,
+        p_key: key,
+        p_value: value,
+      });
 
       if (error) throw error;
 
-      if (key === 'voting_enabled') {
-        setVotingEnabled(value);
-      } else if (key === 'registration_enabled') {
-        setRegistrationEnabled(value);
+      const { data, error: readError } = await supabase.from('site_settings').select('value').eq('key', key).maybeSingle();
+      if (readError) throw readError;
+
+      const saved = typeof data?.value === 'string' ? data.value === 'true' : data?.value === true;
+      if (saved !== value) {
+        return { ok: false, message: "La modification n'a pas été enregistrée." };
       }
 
-      return true;
+      if (key === 'voting_enabled') {
+        setVotingEnabled(saved);
+      } else {
+        setRegistrationEnabled(saved);
+      }
+
+      return { ok: true };
     } catch (error) {
       console.error('Error updating site setting:', error);
-      return false;
+      const message = error && typeof error === 'object' && 'message' in error ? String(error.message) : undefined;
+      return { ok: false, message };
     }
   };
 

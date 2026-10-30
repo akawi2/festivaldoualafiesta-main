@@ -156,7 +156,7 @@ const MissElection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const { toast } = useToast();
-  const { votingEnabled, registrationEnabled } = useSiteSettings();
+  const { votingEnabled, registrationEnabled, loading: settingsLoading } = useSiteSettings();
 
   const autoplay = React.useRef(
     Autoplay({
@@ -242,10 +242,11 @@ const MissElection = () => {
   }, []);
 
   useEffect(() => {
+    if (settingsLoading || !registrationEnabled) return;
     if ((location.state as { openRegistration?: boolean } | null)?.openRegistration) {
       setIsRegistrationDialogOpen(true);
     }
-  }, [location.state]);
+  }, [location.state, registrationEnabled, settingsLoading]);
 
   const handleVote = async (candidateId: string) => {
     setVotingInProgress(candidateId);

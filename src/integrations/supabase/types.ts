@@ -1102,6 +1102,15 @@ export type Database = {
         }
         Returns: string
       }
+      admin_update_site_setting: {
+        Args: {
+          p_acting_email: string
+          p_acting_password: string
+          p_key: string
+          p_value: boolean
+        }
+        Returns: undefined
+      }
       admin_update_stand_payment_status: {
         Args: { p_id: string; p_payment_status: string }
         Returns: undefined
