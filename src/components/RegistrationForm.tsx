@@ -76,6 +76,7 @@ export function RegistrationForm() {
       .min(8)
       .max(20),
     occupation: z.string().min(2, t("occupationRequired")).max(100),
+    /* Envoi des fichiers (photo, CNI, autorisation parentale) désactivé temporairement : les envois échouent.
     idPhoto: z
       .any()
       .optional()
@@ -113,6 +114,7 @@ export function RegistrationForm() {
         if (!file || !(file instanceof File)) return true;
         return file.size <= 5 * 1024 * 1024; // 5MB
       }, t("fileTooLarge")),
+    */
     nationalityCamerounaise: z.boolean().refine((val) => val === true, {
       message: t("nationalityCamerounaiseError"),
     }),
@@ -150,6 +152,7 @@ export function RegistrationForm() {
       }
     }
 
+    /* Envoi des fichiers (photo, CNI, autorisation parentale) désactivé temporairement : les envois échouent.
     // Photo d'identité toujours obligatoire
     if (!data.idPhoto || !(data.idPhoto instanceof File)) {
       ctx.addIssue({
@@ -178,6 +181,7 @@ export function RegistrationForm() {
         });
       }
     }
+    */
   });
 
   const form = useForm<FormValues>({
@@ -247,6 +251,7 @@ export function RegistrationForm() {
       let cardUrl: string | null = null;
       let authUrl: string | null = null;
 
+      /* Envoi des fichiers (photo, CNI, autorisation parentale) désactivé temporairement : les envois échouent.
       // Upload photo if provided
       if (values.idPhoto instanceof File) {
         console.log("Uploading photo...");
@@ -285,6 +290,7 @@ export function RegistrationForm() {
         }
         console.log("Parental authorization uploaded:", authUrl);
       }
+      */
 
       console.log("All files uploaded successfully. Inserting into database...");
 
@@ -632,6 +638,7 @@ export function RegistrationForm() {
         {step === 2 && (
           <>
             <div className="space-y-6">
+              {/* Envoi des fichiers (photo, CNI, autorisation parentale) désactivé temporairement : les envois échouent.
               <h3 className="text-xl font-semibold text-[#5D4037]">{t("documentsRequired")}</h3>
 
               <FormField
@@ -688,6 +695,8 @@ export function RegistrationForm() {
                   )}
                 />
               )}
+
+              */}
 
               <div className="space-y-4 pt-4">
                 <h3 className="text-xl font-semibold text-[#5D4037]">{t("conditions")}</h3>
