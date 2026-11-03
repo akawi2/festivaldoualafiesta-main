@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { buildWhatsAppUrl, redirectToWhatsApp } from "@/utils/whatsapp";
 
 interface TalentApplicationFormProps {
   idPrefix?: string;
@@ -18,9 +19,21 @@ const emptyForm = {
   phone: "",
   quartier: "",
   arrondissement: "",
-  participationType: "",
+  category: "",
+  otherDetail: "",
   message: "",
 };
+
+// Chant et danse en premier
+const CATEGORIES = [
+  { value: "chant", key: "contact.singing" },
+  { value: "danse", key: "contact.dance" },
+  { value: "musique", key: "contact.music" },
+  { value: "peinture", key: "contact.painting" },
+  { value: "mode", key: "contact.fashion" },
+  { value: "beaute", key: "contact.beauty" },
+  { value: "autre", key: "contact.other" },
+] as const;
 
 const label = "block text-sm font-medium text-foreground mb-2";
 
@@ -28,24 +41,21 @@ export const TalentApplicationForm = ({ idPrefix = "talent", onSuccess }: Talent
   const { t } = useTranslation();
   const { toast } = useToast();
   const [formData, setFormData] = useState(emptyForm);
-  const [showOtherInput, setShowOtherInput] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
-    if (name === "participationType" && value === "autre" && !showOtherInput) {
-      setShowOtherInput(true);
-      setFormData((prev) => ({ ...prev, participationType: "" }));
-      return;
-    }
-
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const isOther = formData.category === "autre";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+
+    // « Autre » : on enregistre le talent précisé par la personne
+    const talent = isOther ? formData.otherDetail.trim() : formData.category;
 
     try {
       const { error } = await supabase.rpc("submit_talent_application", {
@@ -55,8 +65,8 @@ export const TalentApplicationForm = ({ idPrefix = "talent", onSuccess }: Talent
         p_phone: formData.phone || null,
         p_quartier: formData.quartier || null,
         p_arrondissement: formData.arrondissement || null,
-        p_participation_type: formData.participationType,
-        p_talent_description: formData.message,
+        p_participation_type: talent,
+        p_talent_description: formData.message.trim(),
       });
 
       if (error) {
@@ -71,13 +81,23 @@ export const TalentApplicationForm = ({ idPrefix = "talent", onSuccess }: Talent
 
       toast({
         title: "Candidature envoyée !",
-        description:
-          "Votre candidature pour vous mettre en lumière a été soumise avec succès. Nous vous recontacterons bientôt.",
+        description: "Votre candidature a été enregistrée. Nous vous recontacterons bientôt. Redirection vers WhatsApp...",
       });
 
+      const whatsappLink = buildWhatsAppUrl(
+        `Bonjour, je viens de m'inscrire pour mettre mon talent en lumière au Festival Douala Fiesta.\n` +
+          `Nom : ${formData.name}\n` +
+          `Nom de scène : ${formData.scene}\n` +
+          `Âge : ${formData.age}\n` +
+          `Talent : ${talent}` +
+          (formData.phone ? `\nTéléphone : ${formData.phone}` : ""),
+      );
+
       setFormData(emptyForm);
-      setShowOtherInput(false);
       onSuccess?.();
+
+      // Une seule redirection, une fois la candidature enregistrée
+      redirectToWhatsApp(whatsappLink);
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -186,61 +206,56 @@ export const TalentApplicationForm = ({ idPrefix = "talent", onSuccess }: Talent
         </div>
       </div>
 
-      <div>
-        <label htmlFor={id("participationType")} className={label}>
-          {t("contact.talentCategory")} *
-        </label>
-        {!showOtherInput ? (
+      <div className="space-y-3">
+        <div>
+          <label htmlFor={id("category")} className={label}>
+            {t("contact.talentCategory")} *
+          </label>
           <select
-            id={id("participationType")}
-            name="participationType"
-            value={formData.participationType}
+            id={id("category")}
+            name="category"
+            value={formData.category}
             onChange={handleInputChange}
             required
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <option value="">{t("contact.specifyCategory")}</option>
-            <option value="musique">{t("contact.music")}</option>
-            <option value="peinture">{t("contact.painting")}</option>
-            <option value="beaute">{t("contact.beauty")}</option>
-            <option value="mode">{t("contact.fashion")}</option>
-            <option value="danse">{t("contact.dance")}</option>
-            <option value="autre">{t("contact.other")}</option>
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {t(c.key)}
+              </option>
+            ))}
           </select>
-        ) : (
-          <div className="space-y-2">
+        </div>
+
+        {isOther && (
+          <div>
+            <label htmlFor={id("otherDetail")} className={label}>
+              {t("contact.specifyOther")} *
+            </label>
             <Input
-              id={id("participationType")}
-              name="participationType"
-              value={formData.participationType}
+              id={id("otherDetail")}
+              name="otherDetail"
+              value={formData.otherDetail}
               onChange={handleInputChange}
               required
-              placeholder={t("contact.specifyCategory")}
+              maxLength={100}
+              autoFocus
+              placeholder={t("contact.specifyOtherPlaceholder")}
             />
-            <button
-              type="button"
-              onClick={() => {
-                setShowOtherInput(false);
-                setFormData((prev) => ({ ...prev, participationType: "" }));
-              }}
-              className="text-sm text-muted-foreground hover:text-foreground underline"
-            >
-              {t("contact.backToOptions")}
-            </button>
           </div>
         )}
       </div>
 
       <div>
         <label htmlFor={id("message")} className={label}>
-          {t("contact.tellUsAboutTalent")} *
+          {t("contact.tellUsAboutTalent")} <span className="font-normal text-muted-foreground">({t("contact.optional")})</span>
         </label>
         <Textarea
           id={id("message")}
           name="message"
           value={formData.message}
           onChange={handleInputChange}
-          required
           rows={5}
           placeholder={t("contact.describeTalent")}
         />

@@ -293,7 +293,11 @@
         "other": "Autres supports"
       }
     },
-    "age": "Âge"
+    "age": "Âge",
+    "singing": "Chant",
+    "specifyOther": "Précisez votre talent",
+    "specifyOtherPlaceholder": "Ex : humour, magie, slam...",
+    "optional": "facultatif"
   },
   "footer": {
     "description": "Suivez notre histoire, notre équipe engagée et nos valeurs qui font de ce festival un moteur incontournable du dynamisme économique et culturel.",
