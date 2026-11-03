@@ -865,6 +865,7 @@ export type Database = {
       }
       talent_submissions: {
         Row: {
+          age: number | null
           arrondissement: string | null
           created_at: string
           id: string
@@ -878,6 +879,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          age?: number | null
           arrondissement?: string | null
           created_at?: string
           id?: string
@@ -891,6 +893,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          age?: number | null
           arrondissement?: string | null
           created_at?: string
           id?: string
@@ -1317,6 +1320,7 @@ export type Database = {
       }
       submit_talent_application: {
         Args: {
+          p_age?: number
           p_arrondissement: string
           p_name: string
           p_participation_type: string

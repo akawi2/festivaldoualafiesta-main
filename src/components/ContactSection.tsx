@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { MapPin, Phone, Mail, Clock, Plus, MessageCircle } from "lucide-react";
 import { useState } from "react";
@@ -9,26 +8,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { getVisitorIp, getVisitorFingerprint } from "@/utils/visitorIdentity";
-import { buildWhatsAppUrl } from "@/utils/whatsapp";
+import { buildWhatsAppUrl, redirectToWhatsApp } from "@/utils/whatsapp";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PartnerSubscriptionForm from "@/components/PartnerSubscriptionForm";
+import TalentApplicationForm from "@/components/TalentApplicationForm";
 
 const ContactSection = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    scene: "",
-    phone: "",
-    quartier: "",
-    arrondissement: "",
-    participationType: "",
-    message: "",
-  });
-
-  const [showOtherInput, setShowOtherInput] = useState(false);
-
   const [standData, setStandData] = useState({
     standType: "",
     standName: "",
@@ -78,92 +65,6 @@ const ContactSection = () => {
       priceValue: 500000,
     },
   ];
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      const { data, error } = await supabase.rpc("submit_talent_application", {
-        p_name: formData.name,
-        p_stage_name: formData.scene,
-        p_phone: formData.phone || null,
-        p_quartier: formData.quartier || null,
-        p_arrondissement: formData.arrondissement || null,
-        p_participation_type: formData.participationType,
-        p_talent_description: formData.message,
-      });
-
-      if (error) {
-        console.error("Error submitting talent application:", error);
-        toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors de l'envoi. Veuillez réessayer.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({
-        title: "Candidature envoyée !",
-        description:
-          "Votre candidature pour vous mettre en lumière a été soumise avec succès. Nous vous recontacterons bientôt.",
-      });
-
-      setFormData({
-        name: "",
-        scene: "",
-        phone: "",
-        quartier: "",
-        arrondissement: "",
-        participationType: "",
-        message: "",
-      });
-    } catch (error) {
-      console.error("Error:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'envoi. Veuillez réessayer.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-
-    if (name === "participationType") {
-      if (value === "autre") {
-        setShowOtherInput(true);
-        setFormData({
-          ...formData,
-          participationType: "",
-        });
-        return;
-      }
-
-      if (showOtherInput) {
-        // L'utilisateur saisit dans le champ "Autre" -> on garde le champ visible
-        setFormData({
-          ...formData,
-          participationType: value,
-        });
-        return;
-      }
-
-      // Sélection depuis la liste (valeur différente de "autre")
-      setShowOtherInput(false);
-      setFormData({
-        ...formData,
-        participationType: value,
-      });
-      return;
-    }
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
 
   // Fonction utilitaire pour le prix du stand (déjà présente, conservée pour le calcul)
   const getSelectedStandPrice = () => {
@@ -227,7 +128,7 @@ const ContactSection = () => {
         description: `Votre demande de réservation pour ${standData.quantity} stand(s) ${standData.standType} (Total: ${totalPrice.toLocaleString("fr-FR")} FCFA) a été envoyée. Nous vous recontacterons rapidement.`,
       });
 
-      setWhatsappUrl(
+      redirectToWhatsApp(
         buildWhatsAppUrl(
           `Bonjour, je viens de réserver un stand pour le Festival Douala Fiesta.\n` +
             `Type de stand : ${standData.standType}\n` +
@@ -353,144 +254,7 @@ const ContactSection = () => {
                 <CardTitle className="text-2xl font-bold text-foreground">{t("contact.highlight")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                        {t("contact.fullName")} *
-                      </label>
-                      <Input
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        placeholder={t("contact.yourFullName")}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="ville" className="block text-sm font-medium text-foreground mb-2">
-                        {t("contact.stageName")} *
-                      </label>
-                      <Input
-                        id="scene"
-                        name="scene"
-                        value={formData.scene}
-                        onChange={handleInputChange}
-                        required
-                        placeholder={t("contact.yourStageName")}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="quartier" className="block text-sm font-medium text-foreground mb-2">
-                        {t("contact.quartier")}
-                      </label>
-                      <Input
-                        id="quartier"
-                        name="quartier"
-                        value={formData.quartier}
-                        onChange={handleInputChange}
-                        placeholder={t("contact.yourNeighbor")}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="arrondissement" className="block text-sm font-medium text-foreground mb-2">
-                        {t("contact.arrondissement")}
-                      </label>
-                      <Input
-                        id="arrondissement"
-                        name="arrondissement"
-                        value={formData.arrondissement}
-                        onChange={handleInputChange}
-                        placeholder={t("contact.yourdistrict")}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
-                        {t("contact.phone")}
-                      </label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="+237 655 55 11 50"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="participationType" className="block text-sm font-medium text-foreground mb-2">
-                        {t("contact.talentCategory")} *
-                      </label>
-                      {!showOtherInput ? (
-                        <select
-                          id="participationType"
-                          name="participationType"
-                          value={formData.participationType}
-                          onChange={handleInputChange}
-                          required
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          <option value="">{t("contact.specifyCategory")}</option>
-                          <option value="musique">{t("contact.music")}</option>
-                          <option value="peinture">{t("contact.painting")}</option>
-                          <option value="beaute">{t("contact.beauty")}</option>
-                          <option value="mode">{t("contact.fashion")}</option>
-                          <option value="danse">{t("contact.dance")}</option>
-                          <option value="autre">{t("contact.other")}</option>
-                        </select>
-                      ) : (
-                        <div className="space-y-2">
-                          <Input
-                            id="participationType"
-                            name="participationType"
-                            value={formData.participationType}
-                            onChange={handleInputChange}
-                            required
-                            placeholder={t("contact.specifyCategory")}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowOtherInput(false);
-                              setFormData({ ...formData, participationType: "" });
-                            }}
-                            className="text-sm text-muted-foreground hover:text-foreground underline"
-                          >
-                            {t("contact.backToOptions")}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                      {t("contact.tellUsAboutTalent")} *
-                    </label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      required
-                      rows={5}
-                      placeholder={t("contact.describeTalent")}
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-gold text-navy font-semibold text-lg py-3 hover:scale-105 transition-transform shadow-gold"
-                  >
-                    {t("contact.sendRequest")}
-                  </Button>
-                </form>
+                <TalentApplicationForm idPrefix="contact-talent" />
               </CardContent>
             </Card>
 
@@ -711,6 +475,7 @@ const ContactSection = () => {
       </div>
     </section>
 
+    {/* Redirection WhatsApp désormais automatique après l'inscription : cette fenêtre avec bouton n'est plus utilisée.
     <Dialog open={!!whatsappUrl} onOpenChange={(open) => !open && setWhatsappUrl(null)}>
       <DialogContent className="max-w-sm text-center">
         <DialogHeader>
@@ -731,6 +496,7 @@ const ContactSection = () => {
         </Button>
       </DialogContent>
     </Dialog>
+    */}
     </>
   );
 };

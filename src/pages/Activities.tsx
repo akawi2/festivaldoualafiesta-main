@@ -10,6 +10,8 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MissStepsTimeline from "@/components/MissStepsTimeline";
 import ActivityRegistrationDialog, { ActivityDiscipline } from "@/components/ActivityRegistrationDialog";
+import TalentApplicationForm from "@/components/TalentApplicationForm";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import lanceGauche from "@/assets/lance-gauche.png";
 import lanceDroite from "@/assets/lance-droite.png";
 
@@ -59,6 +61,7 @@ const Activities = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [registration, setRegistration] = useState<{ disciplines: ActivityDiscipline[]; title: string } | null>(null);
+  const [talentOpen, setTalentOpen] = useState(false);
 
   useEffect(() => {
     if (!location.hash) {
@@ -82,6 +85,7 @@ const Activities = () => {
     { id: "mami-makala", key: "mami" },
     { id: "besua", key: "besua" },
     { id: "brain-games", key: "brain" },
+    { id: "jeunes-talents", key: "talents" },
     { id: "spectacles", key: "shows" },
   ];
 
@@ -235,6 +239,17 @@ const Activities = () => {
           <p className="text-sm text-muted-foreground">{t("activities.brain.support")}</p>
         </ActivitySection>
 
+        {/* Jeunes talents */}
+        <ActivitySection id="jeunes-talents" name={t("activities.talents.name")} period={t("activities.talents.period")}>
+          <p className="text-muted-foreground leading-relaxed">{t("activities.talents.text")}</p>
+          <Button
+            onClick={() => setTalentOpen(true)}
+            className="bg-gradient-gold text-navy font-semibold hover:scale-105 transition-transform"
+          >
+            {t("activities.talents.cta")}
+          </Button>
+        </ActivitySection>
+
         {/* Spectacles / show live */}
         <ActivitySection id="spectacles" name={t("activities.shows.name")} period={t("activities.shows.period")}>
           <p className="text-muted-foreground leading-relaxed">{t("activities.shows.text")}</p>
@@ -246,6 +261,16 @@ const Activities = () => {
           </Button>
         </ActivitySection>
       </div>
+
+      <Dialog open={talentOpen} onOpenChange={setTalentOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">{t("activities.talents.dialogTitle")}</DialogTitle>
+            <DialogDescription>{t("activities.talents.short")}</DialogDescription>
+          </DialogHeader>
+          <TalentApplicationForm idPrefix="activities-talent" onSuccess={() => setTalentOpen(false)} />
+        </DialogContent>
+      </Dialog>
 
       {registration && (
         <ActivityRegistrationDialog

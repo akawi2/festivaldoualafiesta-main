@@ -16,7 +16,8 @@
     "promed": "PROME'D",
     "missDoualaFiesta": "Miss Douala Fiesta",
     "showLive": "Live show",
-    "tableDuCoeur": "Table du Cœur"
+    "tableDuCoeur": "Table du Cœur",
+    "youngTalents": "Young talents"
   },
   "hero": {
     "slogan": "Po la bwam eeeeh!",
@@ -291,7 +292,8 @@
         "spots": "Advertising spots",
         "other": "Other supports"
       }
-    }
+    },
+    "age": "Age"
   },
   "footer": {
     "description": "Follow our story, our dedicated team and our values that make this festival an essential driver of economic and cultural dynamism.",
@@ -518,6 +520,14 @@
       "successText": "Your registration has been recorded. We will contact you soon.",
       "errorTitle": "Error",
       "errorText": "An error occurred while sending. Please try again."
+    },
+    "talents": {
+      "name": "Young talents",
+      "short": "Got a talent? Sign up to be in the spotlight during the festival.",
+      "period": "Registration open",
+      "text": "Music, dance, painting, fashion, beauty... Do you have a talent you want to showcase? Sign up, tell us about your talent and your age, and get in the spotlight during the Douala Fiesta Festival. Our team will contact you.",
+      "cta": "Register",
+      "dialogTitle": "Young talents: put your talent in the spotlight"
     }
   }
 }

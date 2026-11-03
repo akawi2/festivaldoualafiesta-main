@@ -11,6 +11,7 @@ interface TalentSubmission {
   id: string;
   name: string;
   stage_name: string;
+  age: number | null;
   phone: string;
   quartier: string;
   arrondissement: string;
@@ -85,10 +86,11 @@ export function TalentsManager() {
 
   const handleExport = () => {
     const csvContent = [
-      ['Nom', 'Nom de scène', 'Téléphone', 'Quartier', 'Arrondissement', 'Type de participation', 'Description du talent', 'Statut', 'Date de soumission'].join(','),
+      ['Nom', 'Nom de scène', 'Âge', 'Téléphone', 'Quartier', 'Arrondissement', 'Type de participation', 'Description du talent', 'Statut', 'Date de soumission'].join(','),
       ...talents.map(talent => [
         talent.name,
         talent.stage_name,
+        talent.age ?? '',
         talent.phone,
         talent.quartier,
         talent.arrondissement,
@@ -184,6 +186,7 @@ export function TalentsManager() {
                   <TableRow>
                     <TableHead className="text-navy">Nom</TableHead>
                     <TableHead className="text-navy">Nom de scène</TableHead>
+                    <TableHead className="text-navy">Âge</TableHead>
                     <TableHead className="text-navy">Téléphone</TableHead>
                     <TableHead className="text-navy">Quartier</TableHead>
                     <TableHead className="text-navy">Arrondissement</TableHead>
@@ -199,6 +202,7 @@ export function TalentsManager() {
                     <TableRow key={talent.id}>
                       <TableCell className="font-medium text-gray-dark">{talent.name}</TableCell>
                       <TableCell className="text-gray-dark">{talent.stage_name}</TableCell>
+                      <TableCell className="text-gray-dark">{talent.age ?? "-"}</TableCell>
                       <TableCell className="text-gray-dark">{talent.phone}</TableCell>
                       <TableCell className="text-gray-dark">{talent.quartier}</TableCell>
                       <TableCell className="text-gray-dark">{talent.arrondissement}</TableCell>
