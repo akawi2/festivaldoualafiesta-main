@@ -16,7 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateRegistrationPDF } from "@/utils/pdfGenerator";
 import { useTranslation } from "@/hooks/useTranslation";
 import { getVisitorIp, getVisitorFingerprint } from "@/utils/visitorIdentity";
-import { buildWhatsAppUrl } from "@/utils/whatsapp";
+import { buildWhatsAppUrl, redirectToWhatsApp } from "@/utils/whatsapp";
 
 // Année du concours (voir TARGET_DATE dans HeroSection.tsx) : à mettre à jour chaque édition
 const COMPETITION_YEAR = 2026;
@@ -207,7 +207,6 @@ export function RegistrationForm() {
   const birthDateValue = form.watch("birthDate");
   const age = birthDateValue ? calculateAge(birthDateValue) : undefined;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
 
   async function uploadFile(file: File, path: string): Promise<string | null> {
     try {
@@ -328,13 +327,11 @@ export function RegistrationForm() {
 
       console.log("Database insertion successful:", data);
 
-      setWhatsappUrl(
-        buildWhatsAppUrl(
+      const whatsappLink = buildWhatsAppUrl(
           `Bonjour, je viens de m'inscrire au concours Miss Douala Fiesta.\n` +
             `Nom : ${values.firstName} ${values.lastName}\n` +
             `Téléphone : ${values.phone}\n` +
             `Ville : ${values.birthPlace}`,
-        ),
       );
 
       // Generate PDF
@@ -380,6 +377,9 @@ export function RegistrationForm() {
       // Reset form and return to step 1
       form.reset();
       setStep(1);
+
+      // Une seule redirection, une fois l'inscription enregistrée et le PDF généré
+      redirectToWhatsApp(whatsappLink, 2500);
     } catch (error) {
       console.error("Submission error:", error);
       toast.error(t("generalError"));
@@ -821,6 +821,7 @@ export function RegistrationForm() {
       </form>
     </Form>
 
+    {/* Redirection WhatsApp désormais automatique après l'inscription : cette fenêtre avec bouton n'est plus utilisée.
     <Dialog open={!!whatsappUrl} onOpenChange={(open) => !open && setWhatsappUrl(null)}>
       <DialogContent className="max-w-sm text-center">
         <DialogHeader>
@@ -841,6 +842,7 @@ export function RegistrationForm() {
         </Button>
       </DialogContent>
     </Dialog>
+    */}
     </>
   );
 }
